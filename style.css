@@ -1,0 +1,27 @@
+.contenedor {
+      border: 3px solid black;   /* borde del rectángulo */
+      display: flex;             /* flex para dos columnas */
+      justify-content: space-between;
+      width: 120px;              /* ancho ajustable */
+      padding: 10px;
+    }
+
+.columna {
+    display: flex;
+    flex-direction: column;    /* una letra debajo de la otra */
+    gap: 5px;                  /* espacio entre letras */
+}
+
+.rotores {
+    margin-top: 150px;
+    display: flex;
+    /* gap: 50px; */
+    justify-content: space-between;
+}
+
+#teclado {
+    width: 75px;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+}
