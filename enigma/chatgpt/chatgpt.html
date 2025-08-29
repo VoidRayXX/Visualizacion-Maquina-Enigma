@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Flecha entre letras</title>
+  <link href="chatgpt.css" rel="stylesheet">
+</head>
+<body>
+  <h2>Flecha dinámica entre letras</h2>
+  <div class="rotores">
+  <!-- Teclado -->
+    <div class="contenedor" id="teclado">
+      <div class="columna">
+        <div class="tecla" id="A">A</div>
+        <div class="tecla" id="B">B</div>
+        <div class="tecla" id="C">C</div>
+      </div>
+    </div>
+
+    <!-- Segundo rectángulo -->
+    <div class="contenedor" id="rectangulo">
+      <div class="columna">
+        <div class="letra" id="J">J</div>
+        <div class="letra" id="K">K</div>
+        <div class="letra" id="L">L</div>
+      </div>
+    </div>
+  </div>
+  <!-- SVG para flechas -->
+  <svg id="canvas"></svg>
+  <script src="chatgpt.js"></script>
+</body>
+</html>

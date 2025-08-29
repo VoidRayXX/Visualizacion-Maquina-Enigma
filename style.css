@@ -1,27 +1,71 @@
 .contenedor {
-      border: 3px solid black;   /* borde del rectángulo */
-      display: flex;             /* flex para dos columnas */
-      justify-content: space-between;
-      width: 120px;              /* ancho ajustable */
-      padding: 10px;
-    }
+  border: 3px solid black;   /* borde del rectángulo */
+  display: flex;             /* flex para dos columnas */
+  justify-content: space-between;
+  width: 100%;               /* ocupa el ancho disponible */
+  max-width: 150px;          /* límite en escritorio */
+  padding: 10px;
+  box-sizing: border-box;
+}
 
+/* Cada columna de letras */
 .columna {
-    display: flex;
-    flex-direction: column;    /* una letra debajo de la otra */
-    gap: 5px;                  /* espacio entre letras */
+  display: flex;
+  flex-direction: column;    /* una letra debajo de la otra */
+  gap: 5px;                  /* espacio entre letras */
 }
 
 .rotores {
-    margin-top: 150px;
-    display: flex;
-    /* gap: 50px; */
-    justify-content: space-between;
+  margin-top: 150px;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;           /* si no caben en horizontal, bajan */
+  gap: 20px;
 }
 
 #teclado {
-    width: 75px;
-    text-align: center;
-    justify-content: center;
+  width: 75px;
+  text-align: center;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 5px;
+}
+
+.tecla {
+  cursor: pointer;
+  display: inline-block;
+}
+
+.tecla:hover {
+  background-color: yellow;
+}
+
+/* SVG encima */
+.flechas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none; /* no bloquear clics */
+}
+
+/* --- RESPONSIVE --- */
+@media (max-width: 600px) {
+  .contenedor {
+    max-width: 100%;          /* que ocupe todo el ancho en pantallas chicas */
+    flex-direction: column;   /* en vez de dos columnas, se apilan */
     align-items: center;
+  }
+
+  .rotores {
+    margin-top: 50px;
+    justify-content: center;
+  }
+
+  #teclado {
+    width: 100%;
+    max-width: 250px;
+  }
 }

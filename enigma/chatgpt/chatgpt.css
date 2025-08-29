@@ -1,0 +1,52 @@
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 20px;
+}
+
+.contenedor {
+    display: flex;
+    justify-content: space-around;
+    width: 90%;
+    max-width: 600px;
+    margin: 20px;
+    border: 2px solid black;
+    padding: 10px;
+}
+
+.rotores {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.columna {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    align-items: center;
+}
+
+.tecla, .letra {
+    padding: 5px 10px;
+    border: 1px solid black;
+    margin: 2px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.tecla:hover, .letra:hover {
+    background-color: yellow;
+}
+
+/* SVG encima */
+#canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none; /* no bloquear clics */
+}
