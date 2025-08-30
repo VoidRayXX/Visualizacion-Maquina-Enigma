@@ -41,6 +41,10 @@
   background-color: yellow;
 }
 
+#svgs {
+  display: contents;
+}
+
 /* SVG encima */
 .flechas {
     position: absolute;

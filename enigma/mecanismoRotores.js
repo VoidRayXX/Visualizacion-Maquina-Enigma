@@ -59,7 +59,14 @@ export default class Rotores {
 
         const letraIngRefl = this.reflector[indiceIzq];
         const letraReflejada = String.fromCharCode(indiceIzq + 65);
-        caminoEncriptacion.push(letraIngRefl, letraReflejada);
+        caminoEncriptacion.push([letraIngRefl, letraIngRefl]);
+        caminoEncriptacion.push([letraIngRefl, letraIngRefl]);
+        caminoEncriptacion.push([letraReflejada, letraReflejada]);
+
+        // console.log([letraIngRefl, letraIngRefl]);
+        // console.log([letraIngRefl, letraIngRefl]);
+        // console.log([letraReflejada, letraReflejada]);
+
         const posicionLetra = letraIngRefl.charCodeAt() - 65;
 
         entradaRotorIzq = this.rotorIzq.getLetrasAsociadas(posicionLetra);
@@ -70,7 +77,7 @@ export default class Rotores {
         indiceCen = this.rotorCentral.procesarLetra(indiceIzq, 0, 1);
         letrasCen = this.rotorCentral.getLetrasAsociadas(indiceCen);
 
-        entradaRotorIzq = this.rotorDer.getLetrasAsociadas(indiceCen);
+        entradaRotorDer = this.rotorDer.getLetrasAsociadas(indiceCen);
         indiceDer = this.rotorDer.procesarLetra(indiceCen, 0, 1);
         letrasDer = this.rotorDer.getLetrasAsociadas(indiceDer);
 

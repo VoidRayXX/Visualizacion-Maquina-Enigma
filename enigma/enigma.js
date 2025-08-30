@@ -15,8 +15,11 @@ export default class Enigma {
         const {letraRotores, caminoEncriptacion} = this.rotores.encriptarLetra(letraPgb);
         const letraEncriptada = this.plugboard.obtenerLetra(letraRotores);
         
-        caminoEncriptacion.splice(0, 0, [letra, letraPgb]);
-        caminoEncriptacion.push(letraEncriptada);
+        caminoEncriptacion.splice(0, 0, [letra, letra]);
+        caminoEncriptacion.splice(1, 0, [letra, letraPgb]);
+        
+        caminoEncriptacion.push([letraRotores, letraEncriptada]);
+        caminoEncriptacion.push([letraEncriptada, letraEncriptada]);
 
         return {
             letraEncriptada: letraEncriptada,
