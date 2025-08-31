@@ -6,43 +6,63 @@
   <link href="style.css" rel="stylesheet">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
 </head>
-
 <body>
 
+  <div class="sentencias" id="textoEncriptado">_ _ _ _</div>
+  <div class="sentencias" id="textoOriginal">_ _ _ _</div>
+  
+
   <div class="rotores">
-
-    <div class="contenedor" id="reflectorB">
-      <div class="columna" id="columnaIzq"></div>
-      <div class="columna" id="columnaDer"></div>
+    <div class="bloque">
+      <div class="titulo-bloque">Reflector</div>
+      <div class="contenedor" id="reflectorB">
+        <div class="columna" id="columnaIzq"></div>
+        <div class="columna" id="columnaDer"></div>
+      </div>
     </div>
 
-    <div class="contenedor" id="rotorI">
-      <div class="columna" id="columnaIzq"></div>
-      <div class="columna" id="columnaDer"></div>
+    <div class="bloque">
+      <div class="titulo-bloque">Rotor I</div>
+      <div class="contenedor" id="rotorI">
+        <div class="columna" id="columnaIzq"></div>
+        <div class="columna" id="columnaDer"></div>
+      </div>
     </div>
 
-    <div class="contenedor" id="rotorII">
-      <div class="columna" id="columnaIzq"></div>
-      <div class="columna" id="columnaDer"></div>
+    <div class="bloque">
+      <div class="titulo-bloque">Rotor II</div>
+      <div class="contenedor" id="rotorII">
+        <div class="columna" id="columnaIzq"></div>
+        <div class="columna" id="columnaDer"></div>
+      </div>
     </div>
 
-    <div class="contenedor" id="rotorIII">
-      <div class="columna" id="columnaIzq"></div>
-      <div class="columna" id="columnaDer"></div>
+    <div class="bloque">
+      <div class="titulo-bloque">Rotor III</div>
+      <div class="contenedor" id="rotorIII">
+        <div class="columna" id="columnaIzq"></div>
+        <div class="columna" id="columnaDer"></div>
+      </div>
     </div>
 
-    <div class="contenedor" id="plugboard">
-      <div class="columna" id="columnaIzq"></div>
-      <div class="columna" id="columnaDer"></div>
+    <div class="bloque">
+      <div class="titulo-bloque">Plugboard</div>
+      <div class="contenedor" id="plugboard">
+        <div class="columna" id="columnaIzq"></div>
+        <div class="columna" id="columnaDer"></div>
+      </div>
     </div>
 
-    <div class="contenedor" id="teclado">
-      <div class="columna" id="columnaIzq"></div>
+    <div class="bloque">
+      <div class="titulo-bloque">Input/Output</div>
+      <div class="contenedor" id="teclado">
+        <div class="columna" id="columnaIzq"></div>
+      </div>
     </div>
 
     <div id="svgs"></div>
   </div>
-
+  
   <script type="module" src="index.js"></script>
 </body>
 </html>

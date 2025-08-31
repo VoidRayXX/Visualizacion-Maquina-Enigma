@@ -64,8 +64,14 @@ function dibujarFlecha(origenId, destinoId, svgID, sentido) {
     // Supongamos que "id" es el número de tu flecha
     const id = parseInt(svgID.split("flecha")[1]);
 
-    // Definir color dinámico según condición
-    const color = id > 9 ? "blue" : "red";
+    let color; 
+    if(id < 9){
+        color = "red";
+    } else if(id < 11){
+        color = "green";
+    } else {
+        color = "blue";
+    }
 
     // defs con color dinámico
     const defs = `
@@ -88,20 +94,23 @@ function dibujarFlecha(origenId, destinoId, svgID, sentido) {
 }
 
 let ultimoCamino = null;
-function manejarTecla(letra = null, encriptar = false){
-    console.log("Letra Presionada:", letra);
-    if (encriptar){
-        const {letraEncriptada, caminoEncriptacion} = enigma.encriptarLetra(letra);
-        ultimoCamino = caminoEncriptacion;
-        console.log("Letra Encriptada:", letraEncriptada);
-        // console.log(caminoEncriptacion);
-        // enigma.mostrarConfigActual();
-        trazarCamino(caminoEncriptacion);
-    } else{
-        trazarCamino(ultimoCamino);
-    }
-    
+function manejarTecla(letra){
+    const {letraEncriptada, caminoEncriptacion} = enigma.encriptarLetra(letra);
+    ultimoCamino = caminoEncriptacion;
+    trazarCamino(caminoEncriptacion);
+    agregarLetraASentencia(letraEncriptada, "textoEncriptado");
+    agregarLetraASentencia(letra, "textoOriginal");
 }
+
+function agregarLetraASentencia(letra, divID){
+    const textoSentencia = document.getElementById(divID);
+    let contenido;
+    if(textoSentencia.textContent === "_ _ _ _") contenido = "";
+    else contenido = textoSentencia.textContent.slice(0, textoSentencia.textContent.length - 1);
+
+    textoSentencia.textContent = contenido + " " + letra + " _";
+}
+
 
 function trazarCamino(caminoEncriptacion){
     const camino = [
@@ -172,12 +181,13 @@ function crearColumna(columna, secuencia, textoID, esTeclado = false){
         if(esTeclado){
             span.classList.add("tecla");
             span.addEventListener("click", () => {
-                manejarTecla(letra, true);
+                manejarTecla(letra);
             });
         }
         columna.append(span);
     }
 }
+
 
 function crearRotor(nombreRotor){
     const rotor = document.getElementById(nombreRotor);
@@ -216,6 +226,6 @@ window.addEventListener("resize", () => {
 
     // 👇 vuelve a trazar el camino de la última letra presionada
     if (ultimoCamino) {
-        manejarTecla();
+        trazarCamino(ultimoCamino);
     }
 });
