@@ -8,8 +8,6 @@
   100% { opacity: 1; }
 }
 
-
-
 .contenedor {
   border: 3px solid black;   /* borde del rectángulo */
   display: flex;             /* flex para dos columnas */
@@ -28,7 +26,7 @@
 }
 
 .rotores {
-  margin-top: 75px;
+  margin-top: 50px;
   display: flex;
   justify-content: space-between;
   flex-wrap: wrap;           /* si no caben en horizontal, bajan */
@@ -67,7 +65,9 @@
   flex-direction: column;
   flex: none; /* Evitar que flexbox cambie el tamaño */
   align-items: center;
-  width: 150px;
+  width: 7.8125vw;   /* proporcional al ancho de la pantalla */
+  max-width: 150px;  /* nunca más grande de 150px */
+  min-width: 80px;   /* evita que en pantallas muy chicas quede ilegible */
 }
 
 #svgs {
@@ -81,7 +81,7 @@
 }
 
 #textoEncriptado {
-  margin-top: 75px;
+  margin-top: 0px;
   margin-bottom: 20px;
   font-size: large;
 }
@@ -96,6 +96,74 @@
     height: 100%;
     pointer-events: none; /* no bloquear clics */
 }
+
+.enigma-config {
+  background: #d8a84c;
+  border: 2px solid #7a5a2f;
+  padding: 6px;                /* antes 10px */
+  border-radius: 6px;
+  display: inline-block;
+  box-shadow: 1px 1px 5px rgba(0,0,0,0.25); /* sombra más ligera */
+  font-family: Arial, sans-serif;
+  transform: scale(0.9);       /* escala toda la caja al 90% */
+  transform-origin: top left;  /* se reduce desde arriba/izquierda */
+}
+
+.ring-settings { 
+  display: block; 
+  margin: 5px auto; 
+}
+
+.row {
+  display: flex;
+  justify-content: center;
+  gap: 4px;                    /* espacio entre rotores reducido */
+}
+
+.rotor-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 2px;               /* antes 4px */
+}
+
+select {
+  font-size: 0.7vw;
+  padding: 1px 3px;            /* más compacto */
+  margin-bottom: 4px;          /* menos espacio */
+  width: 7vw;
+  max-width: 50px;             /* más angosto que antes (60px) */
+  text-align: center;
+}
+
+.rotor-enigma {
+  background: #eee;
+  border: 1px solid #aaa;
+  border-radius: 4px;
+  padding: 3px;                /* más apretado */
+  text-align: center;
+  width: 7vw;
+  max-width: 50px;             /* más angosto */
+  min-width: 35px;
+}
+
+.rotor-enigma button {
+  width: 100%;
+  padding: 1px;
+  margin: 1px 0;               /* más apretado */
+  font-size: 11px;             /* más pequeño */
+  cursor: pointer;
+}
+
+.rotor-enigma .window {
+  font-size: 0.85vw;           /* un poco más chico */
+  font-weight: bold;
+  background: #fff;
+  border: 1px solid #888;
+  margin: 3px 0;
+  padding: 3px 0;
+}
+
 
 /* --- RESPONSIVE --- */
 @media (max-width: 600px) {
