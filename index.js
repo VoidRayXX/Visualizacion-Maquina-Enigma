@@ -98,17 +98,26 @@ function manejarTecla(letra){
     const {letraEncriptada, caminoEncriptacion} = enigma.encriptarLetra(letra);
     ultimoCamino = caminoEncriptacion;
     trazarCamino(caminoEncriptacion);
-    agregarLetraASentencia(letraEncriptada, "textoEncriptado");
-    agregarLetraASentencia(letra, "textoOriginal");
+    agregarLetraASentencia(letraEncriptada, "textoEncriptado", false);
+    agregarLetraASentencia(letra, "textoOriginal", true);
 }
 
-function agregarLetraASentencia(letra, divID){
-    const textoSentencia = document.getElementById(divID);
-    let contenido;
-    if(textoSentencia.textContent === "_ _ _ _") contenido = "";
-    else contenido = textoSentencia.textContent.slice(0, textoSentencia.textContent.length - 1);
+const letrasEncriptadas = [];
+const letrasOriginales = [];
 
-    textoSentencia.textContent = contenido + " " + letra + " _";
+function agregarLetraASentencia(letra, divID, original) {
+    const textoSentencia = document.getElementById(divID);
+    let texto;
+    if(original){
+        letrasOriginales.push(letra);
+        texto = letrasOriginales.join(" ");
+    }
+    else {
+        letrasEncriptadas.push(letra);
+        texto = letrasEncriptadas.join(" ");
+    }
+
+    textoSentencia.innerHTML = texto + " " + ' <span class="cursor-parpadeante">&nbsp;_</span>';
 }
 
 
