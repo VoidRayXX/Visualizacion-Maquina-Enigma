@@ -42,7 +42,7 @@ export default class Enigma {
     // }
 
     mostrarConfigActual(){
-        this.rotores.mostrarConfigActual();
+        return this.rotores.mostrarConfigActual();
     }
 
 }

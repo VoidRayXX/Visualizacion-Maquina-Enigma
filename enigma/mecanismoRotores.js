@@ -17,9 +17,12 @@ export default class Rotores {
         const letraIzq = this.rotorIzq.letraActual();
         const letraCen = this.rotorCentral.letraActual();
         const letraDer = this.rotorDer.letraActual();
-        console.log("Rotor Izquierdo (I): " + letraIzq);
-        console.log("Rotor Izquierdo (II): " + letraCen);
-        console.log("Rotor Izquierdo (III): " + letraDer);
+
+        return {
+            letraIzq: letraIzq,
+            letraCen: letraCen,
+            letraDer: letraDer
+        };
     }
 
     encriptarLetra(letra){
