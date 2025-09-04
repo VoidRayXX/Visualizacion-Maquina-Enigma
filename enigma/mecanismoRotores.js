@@ -7,6 +7,7 @@ export default class Rotores {
         ])
     constructor(rotorIzq, rotorCentral, rotorDer, reflector){
         reflector = reflector.toUpperCase();
+        this.nombreReflector = reflector;
         this.rotorIzq = rotorIzq;
         this.rotorCentral = rotorCentral;
         this.rotorDer = rotorDer;
@@ -23,6 +24,14 @@ export default class Rotores {
             letraCen: letraCen,
             letraDer: letraDer
         };
+    }
+
+    printConfig(){
+        console.log("Reflector: " + this.nombreReflector);
+        console.log("Rotor Izquierdo " + this.rotorIzq.getInfo());
+        console.log("Rotor Central " + this.rotorCentral.getInfo());
+        console.log("Rotor Derecho " + this.rotorDer.getInfo());
+        console.log("***********************");
     }
 
     encriptarLetra(letra){

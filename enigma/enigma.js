@@ -45,4 +45,8 @@ export default class Enigma {
         return this.rotores.mostrarConfigActual();
     }
 
+    printConfig(){
+        this.rotores.printConfig();
+    }
+
 }

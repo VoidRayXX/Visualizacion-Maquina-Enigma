@@ -4,9 +4,9 @@ import Enigma from "./enigma/enigma.js";
 
 const abecedario = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-let rotorIzq = new Rotor("Rotor I", "a", "a");
-let rotorCentral = new Rotor("Rotor II", "a", "a");
-let rotorDer = new Rotor("Rotor III", "a", "a");
+let rotorIzq = new Rotor("I", "a", "a");
+let rotorCentral = new Rotor("II", "a", "a");
+let rotorDer = new Rotor("III", "a", "a");
 
 let rotores = new Rotores(rotorIzq, rotorCentral, rotorDer, "B");
 
@@ -104,17 +104,7 @@ function manejarTecla(letra){
     agregarLetraASentencia(letraEncriptada, "textoEncriptado", false);
     agregarLetraASentencia(letra, "textoOriginal", true);
     mostrarConfigActual();
-}
-
-function mostrarConfigActual(){
-    const {letraIzq, letraCen, letraDer} = enigma.mostrarConfigActual();
-    const rotorIzq = document.getElementById("letraIzq");
-    const rotorCen = document.getElementById("letraCen");
-    const rotorDer = document.getElementById("letraDer");
-
-    rotorDer.textContent = letraDer;
-    rotorCen.textContent = letraCen;
-    rotorIzq.textContent = letraIzq;
+    enigma.printConfig();
 }
 
 function agregarLetraASentencia(letra, divID, original) {
@@ -211,19 +201,40 @@ function borrarSentencias(){
     letrasOriginales.length = 0;
 }
 
-// function cambiarConfigEnigma(){
-//     const letraIzq = document.getElementById("letraIzq").textContent;
-//     const letraCen = document.getElementById("letraCen").textContent;
-//     const letraDer = document.getElementById("letraDer").textContent;
+function reiniciarPag(){
+    borrarSVGs();
+    ultimoCamino = null;
+    borrarSentencias();
+}
 
-//     //variables globales
-//     rotorIzq = new Rotor(rotorIzq, letraIzq, "a");
-//     rotorCentral = new Rotor(rotorCentral, letraCen, "a");
-//     rotorDer = new Rotor(rotorDer, letraDer, "a");
+function mostrarConfigActual(){
+    const {letraIzq, letraCen, letraDer} = enigma.mostrarConfigActual();
+    const rotorIzq = document.getElementById("letraIzq");
+    const rotorCen = document.getElementById("letraCen");
+    const rotorDer = document.getElementById("letraDer");
 
-//     rotores = new Rotores(rotorIzq, rotorCentral, rotorDer, "B");
-//     enigma = new Enigma(rotores);
-// }
+    rotorDer.textContent = letraDer;
+    rotorCen.textContent = letraCen;
+    rotorIzq.textContent = letraIzq;
+}
+
+function cambiarConfigEnigma(){
+    const letraIzq = document.getElementById("letraIzq").textContent;
+    const letraCen = document.getElementById("letraCen").textContent;
+    const letraDer = document.getElementById("letraDer").textContent;
+
+    const selects = document.querySelectorAll(".rotor-group select");
+    let [reflector, rotorIzq, rotorCentral, rotorDer] = Array.from(selects).map(sel => sel.value);
+    
+    //variables globales
+    rotorIzq = new Rotor(rotorIzq, letraIzq, "a");
+    rotorCentral = new Rotor(rotorCentral, letraCen, "a");
+    rotorDer = new Rotor(rotorDer, letraDer, "a");
+
+    rotores = new Rotores(rotorIzq, rotorCentral, rotorDer, reflector);
+    enigma = new Enigma(rotores);
+    enigma.printConfig();
+}
 
 function actualizarConfig(event){
     const boton = event.target;
@@ -239,8 +250,8 @@ function actualizarConfig(event){
     posLetra = (posLetra + 26) % 26;
     const nuevaLetra = abecedario[posLetra];
     ventana.textContent = nuevaLetra;
-    borrarSVGs();
-    borrarSentencias();
+    cambiarConfigEnigma();
+    reiniciarPag();
 }
 
 function crearColumna(columna, secuencia, textoID, esTeclado = false){
@@ -291,6 +302,26 @@ for (let i = 0; i < 20; i++) {
 document.querySelectorAll('.rotor-enigma button').forEach(boton => {
   boton.addEventListener('click', event => {
     actualizarConfig(event);
+  });
+});
+
+const selects = document.querySelectorAll(".rotor-group select");
+
+// Recorre cada uno y le agrega un listener
+selects.forEach(sel => {
+  sel.addEventListener("change", () => {
+    // Aquí llamas a tu función de actualización
+    reiniciarPag();
+    cambiarConfigEnigma();
+  });
+});
+
+document.querySelectorAll(".rotor-enigma .window").forEach(win => {
+  win.addEventListener("input", () => {
+    let val = win.textContent.toUpperCase().replace(/[^A-Z]/g, "");
+    win.textContent = val.slice(-1) || "A"; // siempre 1 letra
+    cambiarConfigEnigma();
+    reiniciarPag();
   });
 });
 

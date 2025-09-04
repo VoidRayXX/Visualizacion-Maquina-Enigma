@@ -1,11 +1,11 @@
 const abecedario = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 export default class Rotor {
     static rotores = new Map([
-        ["Rotor I", ["EKMFLGDQVZNTOWYHXUSPAIBRCJ", "Q"]],
-        ["Rotor II", ["AJDKSIRUXBLHWTMCQGZNPYFVOE", "E"]],
-        ["Rotor III", ["BDFHJLCPRTXVZNYEIWGAKMUSQO", "V"]],
-        ["Rotor IV", ["ESOVPZJAYQUIRHXLNFTGKDCMWB", "J"]],
-        ["Rotor V", ["VZBRGITYUPSDNHLXAWMJQOFECK", "Z"]]
+        ["I", ["EKMFLGDQVZNTOWYHXUSPAIBRCJ", "Q"]],
+        ["II", ["AJDKSIRUXBLHWTMCQGZNPYFVOE", "E"]],
+        ["III", ["BDFHJLCPRTXVZNYEIWGAKMUSQO", "V"]],
+        ["IV", ["ESOVPZJAYQUIRHXLNFTGKDCMWB", "J"]],
+        ["V", ["VZBRGITYUPSDNHLXAWMJQOFECK", "Z"]]
     ]);
 
     constructor(nombreRotor, posInicial, offset){
@@ -47,8 +47,7 @@ export default class Rotor {
 
     
     getInfo(){
-        console.log(this.nombreRotor);
-        console.log(this.rotor);
+        return "(" + this.nombreRotor + ")" + ": " + this.letraActual();
     }
 
     rotar(){
