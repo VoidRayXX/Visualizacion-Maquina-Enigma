@@ -17,13 +17,13 @@ const letrasEncriptadas = [];
 const letrasOriginales = [];
 
 const configuraciones = new Map([
-    ["rotorI", ["EKMFLGDQVZNTOWYHXUSPAIBRCJ", "Q"]],
-    ["rotorII", ["AJDKSIRUXBLHWTMCQGZNPYFVOE", "E"]],
-    ["rotorIII", ["BDFHJLCPRTXVZNYEIWGAKMUSQO", "V"]],
-    ["rotorIV", ["ESOVPZJAYQUIRHXLNFTGKDCMWB", "J"]],
-    ["rotorV", ["VZBRGITYUPSDNHLXAWMJQOFECK", "Z"]],
+    ["I", ["EKMFLGDQVZNTOWYHXUSPAIBRCJ", "Q"]],
+    ["II", ["AJDKSIRUXBLHWTMCQGZNPYFVOE", "E"]],
+    ["III", ["BDFHJLCPRTXVZNYEIWGAKMUSQO", "V"]],
+    ["IV", ["ESOVPZJAYQUIRHXLNFTGKDCMWB", "J"]],
+    ["V", ["VZBRGITYUPSDNHLXAWMJQOFECK", "Z"]],
     ["A", ["EJMZALYXVBWFCRQUONTSPIKHGD", null]],
-    ["reflectorB", ["YRUHQSLDPXNGOKMIEBFZCWVJAT", null]],
+    ["B", ["YRUHQSLDPXNGOKMIEBFZCWVJAT", null]],
     ["C", ["FVPJIAOYEDRZXWGCTKUQSBNMHL", null]],
     ["plugboard", [abecedario, null]]
 ]);
@@ -104,7 +104,14 @@ function manejarTecla(letra){
     agregarLetraASentencia(letraEncriptada, "textoEncriptado", false);
     agregarLetraASentencia(letra, "textoOriginal", true);
     mostrarConfigActual();
-    enigma.printConfig();
+    // enigma.printConfig();
+    actualizarRotoresVisuales();
+}
+
+function actualizarRotoresVisuales(){
+    actualizarRotorVisual("rotorDer", enigma.rotores.rotorDer);
+    actualizarRotorVisual("rotorCentral", enigma.rotores.rotorCentral);
+    actualizarRotorVisual("rotorIzq", enigma.rotores.rotorIzq);
 }
 
 function agregarLetraASentencia(letra, divID, original) {
@@ -127,21 +134,21 @@ function trazarCamino(caminoEncriptacion){
     const camino = [
         "plugboard-der-",
         "plugboard-izq-",
-        "rotorIII-der-",
-        "rotorIII-izq-",
-        "rotorII-der-",
-        "rotorII-izq-",
-        "rotorI-der-",
-        "rotorI-izq-",
-        "reflectorB-der-",
-        "reflectorB-izq-",
-        "reflectorB-der-",
-        "rotorI-izq-",
-        "rotorI-der-",
-        "rotorII-izq-",
-        "rotorII-der-",
-        "rotorIII-izq-",
-        "rotorIII-der-",
+        "rotorDer-der-",
+        "rotorDer-izq-",
+        "rotorCentral-der-",
+        "rotorCentral-izq-",
+        "rotorIzq-der-",
+        "rotorIzq-izq-",
+        "reflector-der-",
+        "reflector-izq-",
+        "reflector-der-",
+        "rotorIzq-izq-",
+        "rotorIzq-der-",
+        "rotorCentral-izq-",
+        "rotorCentral-der-",
+        "rotorDer-izq-",
+        "rotorDer-der-",
         "plugboard-izq-",
         "plugboard-der-",
     ];
@@ -233,7 +240,6 @@ function cambiarConfigEnigma(){
 
     rotores = new Rotores(rotorIzq, rotorCentral, rotorDer, reflector);
     enigma = new Enigma(rotores);
-    enigma.printConfig();
 }
 
 function actualizarConfig(event){
@@ -252,7 +258,36 @@ function actualizarConfig(event){
     ventana.textContent = nuevaLetra;
     cambiarConfigEnigma();
     reiniciarPag();
+
+    actualizarRotoresVisuales();
+
 }
+
+function actualizarRotorVisual(rotorID, rotorObj) {
+    const rotorDiv = document.getElementById(rotorID);
+    const columnas = rotorDiv.querySelectorAll("div");
+
+    const columnaIzq = columnas[0].querySelectorAll("span");
+    const columnaDer = columnas[1].querySelectorAll("span");
+
+    const abecedarioRotado = 
+        abecedario.slice(rotorObj.posInicial) + abecedario.slice(0, rotorObj.posInicial);
+
+    const mapeo = rotorObj.rotor.map(pair => pair[1]).join("");
+    const mapeoRotado = 
+        mapeo.slice(rotorObj.posInicial) + mapeo.slice(0, rotorObj.posInicial);
+
+    // reasignar letras en la columna izquierda
+    for (let i = 0; i < 26; i++) {
+        columnaIzq[i].textContent = abecedarioRotado[i];
+    }
+
+    // reasignar letras en la columna derecha
+    for (let i = 0; i < 26; i++) {
+        columnaDer[i].textContent = mapeoRotado[i];
+    }
+}
+
 
 function crearColumna(columna, secuencia, textoID, esTeclado = false){
     for(let letra of secuencia){
@@ -271,25 +306,39 @@ function crearColumna(columna, secuencia, textoID, esTeclado = false){
 }
 
 
-function crearRotor(nombreRotor){
-    const rotor = document.getElementById(nombreRotor);
+function crearRotor(posRotor, nombreRotor){
+    let rotor = document.getElementById(posRotor);
+
     const columnaIzq = rotor.querySelectorAll("div")[0];
     const columnaDer = rotor.querySelectorAll("div")[1];
-    const [secuencia, notch] = configuraciones.get(nombreRotor)
 
-    crearColumna(columnaIzq, abecedario, nombreRotor+"-izq-");
-    crearColumna(columnaDer, secuencia, nombreRotor+"-der-")
+    // Aplica animación de giro
+    columnaIzq.classList.add("rotor-columna", "girar");
+    columnaDer.classList.add("rotor-columna", "girar");
+
+    columnaIzq.innerHTML = "";
+    columnaDer.innerHTML = "";
+
+    const [secuencia, notch] = configuraciones.get(nombreRotor);
+
+    // Crea nuevo contenido
+    crearColumna(columnaIzq, abecedario, posRotor+"-izq-");
+    crearColumna(columnaDer, secuencia, posRotor+"-der-");
+
+    // Quita animación para mostrar nuevo contenido
+    columnaIzq.classList.remove("girar");
+    columnaDer.classList.remove("girar");
 }
 
 
 const teclado = document.getElementById("teclado").querySelector("div");
 crearColumna(teclado, abecedario, "teclado-", true);
 
-crearRotor("plugboard");
-crearRotor("reflectorB");    //reflector B
-crearRotor("rotorI");
-crearRotor("rotorII");
-crearRotor("rotorIII");
+crearRotor("plugboard", "plugboard");
+crearRotor("reflector", "B");    //reflector B
+crearRotor("rotorIzq", "I");
+crearRotor("rotorCentral", "II");
+crearRotor("rotorDer", "III");
 
 const contenedor = document.getElementById("svgs");
 for (let i = 0; i < 20; i++) {
@@ -309,10 +358,19 @@ const selects = document.querySelectorAll(".rotor-group select");
 
 // Recorre cada uno y le agrega un listener
 selects.forEach(sel => {
-  sel.addEventListener("change", () => {
-    // Aquí llamas a tu función de actualización
+  sel.addEventListener("change", (e) => {
+    const grupo = e.target.closest(".rotor-group");
+    const reflector = grupo?.dataset.reflector;
+
+    const nombreReflector = e.target.value;
+
     reiniciarPag();
+
+    if(reflector)  crearRotor("reflector", nombreReflector);
+
     cambiarConfigEnigma();
+
+    actualizarRotoresVisuales();
   });
 });
 
@@ -322,6 +380,7 @@ document.querySelectorAll(".rotor-enigma .window").forEach(win => {
     win.textContent = val.slice(-1) || "A"; // siempre 1 letra
     cambiarConfigEnigma();
     reiniciarPag();
+    actualizarRotoresVisuales();
   });
 });
 
