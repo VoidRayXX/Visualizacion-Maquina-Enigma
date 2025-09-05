@@ -48,23 +48,23 @@ function dibujarFlecha(origenId, destinoId, svgID, sentido) {
     const origen = document.getElementById(origenId).getBoundingClientRect();
     const destino = document.getElementById(destinoId).getBoundingClientRect();
 
-    // obtener posición relativa dentro del documento
-    const startY = origen.top + origen.height / 2 + window.scrollY;
-    const endY = destino.top + destino.height / 2 + window.scrollY;
+    // Coordenadas relativas al viewport (sin scroll)
+    const startY = origen.top + origen.height / 2;
+    const endY = destino.top + destino.height / 2;
 
     let startX, endX;
     if(sentido === "ida"){
-        startX = origen.left + window.scrollX;
-        endX = destino.right + window.scrollX;
+        startX = origen.left;
+        endX = destino.right;
     } else {
-        startX = origen.right + window.scrollX;
-        endX = destino.left + window.scrollX;
+        startX = origen.right;
+        endX = destino.left;
     }
 
-    svg.setAttribute("width", document.body.scrollWidth);
-    svg.setAttribute("height", document.body.scrollHeight);
+    // Tamaño del viewport
+    svg.setAttribute("width", window.innerWidth);
+    svg.setAttribute("height", window.innerHeight);
 
-    // Supongamos que "id" es el número de tu flecha
     const id = parseInt(svgID.split("flecha")[1]);
 
     let color; 
@@ -76,7 +76,6 @@ function dibujarFlecha(origenId, destinoId, svgID, sentido) {
         color = "blue";
     }
 
-    // defs con color dinámico
     const defs = `
     <defs>
         <marker id="arrow${id}" markerWidth="10" markerHeight="10" refX="10" refY="5" orient="auto">
@@ -85,15 +84,12 @@ function dibujarFlecha(origenId, destinoId, svgID, sentido) {
     </defs>
     `;
 
-    // Línea con stroke dinámico
     const line = `
     <line x1="${startX}" y1="${startY}" x2="${endX}" y2="${endY}" 
             stroke="${color}" stroke-width="2" marker-end="url(#arrow${id})" />
     `;
 
-    // Pintar en el SVG
     svg.innerHTML = defs + line;
-
 }
 
 let ultimoCamino = null;
@@ -388,8 +384,18 @@ document.querySelectorAll(".rotor-enigma .window").forEach(win => {
 window.addEventListener("resize", () => {
     borrarSVGs();
 
-    // 👇 vuelve a trazar el camino de la última letra presionada
+    // vuelve a trazar el camino de la última letra presionada
     if (ultimoCamino) {
         trazarCamino(ultimoCamino);
     }
 });
+
+window.addEventListener("scroll", () => {
+    borrarSVGs();
+    
+    // Redibujar el camino si existe
+    if (ultimoCamino) {
+        trazarCamino(ultimoCamino);
+    }
+});
+
