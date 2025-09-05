@@ -25,12 +25,19 @@
   gap: 5px;                  /* espacio entre letras */
 }
 
+/* ROTORES - FORZAR UNA SOLA FILA CON MEJOR DISTRIBUCIÓN */
 .rotores {
-  margin-top: 50px;
+  margin-left: 35%;
+  margin-top: 30px;
   display: flex;
-  justify-content: center;  /* cambiar de space-between a center */
-  flex-wrap: wrap;
-  gap: 20px;
+  justify-content: center;
+  flex-wrap: nowrap !important;
+  gap: 25px;
+  align-items: flex-start;
+  overflow-x: auto;
+  padding: 20px;
+  width: 100%;
+  min-width: 0;
 }
 
 #teclado {
@@ -86,20 +93,30 @@
 }
 
 .sentencias-container {
-  margin-top: 40px;
+  margin: 40px auto 30px auto;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  width: fit-content;  /* cambiar a fit-content */
-  align-items: center;
+  gap: 15px;
+  width: 90%;
+  max-width: 1000px;
+  text-align: center;
+  max-height: 200px;
+  overflow-y: auto;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  z-index: 1000;
 }
 
 .sentencias {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: medium;
-  width: fit-content;  /* agregar esta línea */
+  display: block;
+  width: 100%;
+  text-align: left;
+  white-space: pre-wrap;
+  word-break: break-word;
+  line-height: 1.5;
+  margin: 0;
 }
 
 #textoEncriptado {
@@ -133,6 +150,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  margin-right: 20%;
 }
 
 .enigma-config {
@@ -210,23 +228,24 @@ select {
 
 .plugboard-container {
   text-align: center;
-  padding: 20px;
-  background-color: #1e1e1e; /* mismo fondo oscuro */
+  padding: 12px;
+  background-color: #1e1e1e;
   color: #fff;
   border-radius: 8px;
+  margin-top: 10px;
 }
 
 .plugboard-title {
-  font-size: 1.5em;
+  font-size: 1.2em;
   font-weight: bold;
-  margin-bottom: 5px;
+  margin-bottom: 8px;
 }
 
 .plugboard-link {
   display: inline-block;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
   font-size: 0.9em;
-  color: #42a5f5; /* azul */
+  color: #42a5f5;
   text-decoration: none;
 }
 
@@ -237,43 +256,178 @@ select {
 .plugboard-grid {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
   align-items: center;
 }
 
 .plugboard-row {
   display: flex;
-  gap: 10px;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 .plugboard-row label {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 3px;
   font-weight: bold;
+  font-size: 12px;
 }
 
 .plugboard-row input {
-  width: 30px;
+  width: 25px;
   height: 20px;
   text-align: center;
-  border: none;
+  border: 1px solid #666;
   border-radius: 3px;
+  font-size: 11px;
+  font-weight: bold;
+}
+
+.sentencias-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.sentencias-container::-webkit-scrollbar-track {
+  background: rgba(0,0,0,0.1);
+  border-radius: 4px;
+}
+
+.sentencias-container::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,0.3);
+  border-radius: 4px;
+}
+
+.sentencias-container::-webkit-scrollbar-thumb:hover {
+  background: rgba(0,0,0,0.5);
 }
 
 
-/* --- RESPONSIVE --- */
-@media (max-width: 600px) {
-  .contenedor {
-    max-width: 100%;          /* que ocupe todo el ancho en pantallas chicas */
-    flex-direction: column;   /* en vez de dos columnas, se apilan */
-    align-items: center;
+/* RESPONSIVE - MANTENER ROTORES EN UNA FILA CON ESPACIADO MÁXIMO */
+@media (max-width: 1400px) {
+  .bloque {
+    width: 110px !important;
+    min-width: 110px !important;
   }
+}
+
+@media (max-width: 1200px) {
+  .bloque {
+    width: 100px !important;
+    min-width: 100px !important;
+  }
+  .enigma-config {
+    transform: scale(0.75);
+  }
+}
+
+@media (max-width: 1000px) {
+  .bloque {
+    width: 90px !important;
+    min-width: 90px !important;
+  }
+  .enigma-config {
+    transform: scale(0.7);
+  }
+}
+
+@media (max-width: 900px) {
+  .bloque {
+    width: 80px !important;
+    min-width: 80px !important;
+  }
+  .rotores {
+    padding: 15px 5px;
+  }
+  .enigma-config {
+    transform: scale(0.65);
+  }
+}
+
+@media (max-width: 768px) {
+  .bloque {
+    width: 70px !important;
+    min-width: 70px !important;
+  }
+  .rotores {
+    padding: 10px 5px;
+  }
+  .enigma-config {
+    transform: scale(0.6);
+  }
+  .contenedor {
+    max-width: 120px;
+    padding: 8px;
+  }
+}
 
 @media (max-width: 600px) {
+  .bloque {
+    width: 65px !important;
+    min-width: 65px !important;
+  }
   .rotores {
-    margin-top: 50px;
-    justify-content: center;  /* asegurar que también esté centrado en móvil */
+    padding: 8px 5px;
+    margin-top: 15px;
+  }
+  .enigma-config {
+    transform: scale(0.55);
+  }
+  .sentencias-container {
+    width: 95%;
+    max-height: 150px;
+    padding: 15px;
+  }
+  .sentencias {
+    font-size: 14px;
+  }
+  #textoEncriptado {
+    font-size: 16px;
+  }
+  #teclado {
+    width: 100%;
+    max-width: 200px;
+  }
+}
+
+@media (max-width: 480px) {
+  .bloque {
+    width: 55px !important;
+    min-width: 55px !important;
+  }
+  .rotores {
+    padding: 5px;
+  }
+  .enigma-config {
+    transform: scale(0.5);
+  }
+  .titulo-bloque {
+    font-size: 10px;
+  }
+  .contenedor {
+    max-width: 100px;
+    padding: 6px;
+  }
+  .plugboard-row {
+    gap: 4px;
+  }
+  .plugboard-row input {
+    width: 20px;
+    height: 18px;
+  }
+}
+
+/* ASEGURAR QUE SIEMPRE SEA UNA SOLA FILA */
+@media (max-width: 400px) {
+  .rotores {
+    overflow-x: scroll;
+    padding: 5px 2px 15px 2px;
+  }
+  
+  .bloque {
+    width: 50px !important;
+    min-width: 50px !important;
   }
 }
 
@@ -281,4 +435,4 @@ select {
   width: 100%;
   max-width: 250px;
 }
-}
+
