@@ -3,6 +3,14 @@ export default class Plugboard {
         this.plugboard = new Map();
     }
 
+    eliminarConex(letra){
+        if(this.plugboard.has(letra)){
+            const antiguaConex = this.plugboard.get(letra);
+            this.plugboard.delete(antiguaConex);
+            this.plugboard.delete(letra);
+        }
+    }
+
     conectarLetras(letra1, letra2){
         letra1 = letra1.toUpperCase();
         letra2 = letra2.toUpperCase();

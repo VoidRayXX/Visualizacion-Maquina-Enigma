@@ -8,6 +8,7 @@ export default class Enigma {
 
     conectarLetras(letra1, letra2){
         this.plugboard.conectarLetras(letra1, letra2);
+        // console.log(`Conectado: ${letra1} ↔ ${letra2}`);
     }
 
     encriptarLetra(letra){

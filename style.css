@@ -294,6 +294,12 @@ select {
   transform: scale(1.1);
 }
 
+.plugboard-button.seleccionado {
+    background-color: #4CAF50; /* verde intenso */
+    color: white;
+    border: 2px solid #2E7D32;
+}
+
 
 .sentencias-container::-webkit-scrollbar {
   width: 8px;

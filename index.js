@@ -285,6 +285,7 @@ function actualizarRotorVisual(rotorID, rotorObj) {
 }
 
 
+
 function crearColumna(columna, secuencia, textoID, esTeclado = false){
     for(let letra of secuencia){
         const span = document.createElement("span");
@@ -370,6 +371,11 @@ selects.forEach(sel => {
   });
 });
 
+const botonRingSettings = document.querySelector('.ring-settings');
+botonRingSettings.addEventListener('click', event => {
+    console.log("hola")
+});
+
 document.querySelectorAll(".rotor-enigma .window").forEach(win => {
   win.addEventListener("input", () => {
     let val = win.textContent.toUpperCase().replace(/[^A-Z]/g, "");
@@ -377,6 +383,84 @@ document.querySelectorAll(".rotor-enigma .window").forEach(win => {
     cambiarConfigEnigma();
     reiniciarPag();
     actualizarRotoresVisuales();
+  });
+});
+
+
+const coloresPlugboard = [
+  "#2196F3", "#CDDC39", "#FF5252", "#FF9800", "#9C27B0",
+  "#607D8B", "#FFEB3B", "#388E3C", "#00BCD4", "#212121"
+];
+
+
+function cambiarColorBotones(letra1, letra2){
+    const boton1 = [...document.querySelectorAll(".plugboard-button")]
+    .find(btn => btn.textContent.trim() === letra1);
+    const boton2 = [...document.querySelectorAll(".plugboard-button")]
+    .find(btn => btn.textContent.trim() === letra2);
+
+    // Asignar color desde la lista
+    const color = coloresPlugboard[colorIndex % coloresPlugboard.length];
+    boton1.style.backgroundColor = color;
+    boton2.style.backgroundColor = color;
+}
+
+function eliminarConex(letra1){
+    const letra2 = enigma.plugboard.obtenerLetra(letra1);
+
+    const boton1 = [...document.querySelectorAll(".plugboard-button")]
+    .find(btn => btn.textContent.trim() === letra1);
+    const boton2 = [...document.querySelectorAll(".plugboard-button")]
+    .find(btn => btn.textContent.trim() === letra2);
+
+    boton1.classList.remove("seleccionado");
+    boton1.style.backgroundColor = "";
+    boton2.classList.remove("seleccionado");
+    boton2.style.backgroundColor = "";
+
+    enigma.plugboard.eliminarConex(letra1);
+    enigma.plugboard.mostrarPlugboard();
+}
+
+let seleccionados = [];
+let colorIndex = 0;
+let numConexiones = 0;
+
+document.querySelectorAll(".plugboard-button").forEach((boton) => {
+  boton.addEventListener("click", () => {
+    let letra;
+    if(numConexiones < 11) letra = boton.textContent.trim();
+    else return;
+
+    if(boton.classList.contains("seleccionado")){
+        eliminarConex(letra);
+        numConexiones--;
+        reiniciarPag();
+        return;
+    }
+
+    if(seleccionados.includes(letra)) {
+        seleccionados = [];
+        boton.classList.remove("seleccionado");
+        boton.style.backgroundColor = "";
+        return;
+    }
+
+    seleccionados.push(letra);
+    boton.classList.add("seleccionado");
+
+    if(seleccionados.length === 2 && numConexiones < 11) {
+        const [letra1, letra2] = seleccionados;
+        enigma.conectarLetras(letra1, letra2);
+        enigma.plugboard.mostrarPlugboard();
+
+        cambiarColorBotones(letra1, letra2);
+        colorIndex++;
+       
+        seleccionados = [];
+        numConexiones++;
+        reiniciarPag();
+    }
   });
 });
 
