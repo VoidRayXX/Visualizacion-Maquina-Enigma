@@ -110,11 +110,12 @@ let ultimoCamino = null;
 function manejarTecla(letra){
     const {letraEncriptada, caminoEncriptacion} = enigma.encriptarLetra(letra);
     ultimoCamino = caminoEncriptacion;
+    console.log(caminoEncriptacion);
+    // actualizarRotoresVisuales();
+    mostrarConfigActual();
     trazarCamino(caminoEncriptacion);
     agregarLetraASentencia(letraEncriptada, "textoEncriptado", false);
     agregarLetraASentencia(letra, "textoOriginal", true);
-    mostrarConfigActual();
-    actualizarRotoresVisuales();
 }
 
 function mostrarConfigActual(){
@@ -224,8 +225,8 @@ function trazarCamino(caminoEncriptacion){
         const origen = camino[i] + caminoEncriptacion[i][columnaOrigen];
         const destino = camino[i+1] + caminoEncriptacion[i+1][columnaDestino];
         const idFlecha = "flecha" + (i + 1).toString();
-        // console.log(idFlecha);
-        // console.log(origen,"->", destino);
+        console.log(idFlecha);
+        console.log(origen,"->", destino);
 
         if(i > 8){
             sentido = "vuelta";
@@ -414,7 +415,7 @@ function mostrarRingSettings() {
 const botonRingSettings = document.querySelector('.ring-settings');
 botonRingSettings.addEventListener('click', () => {
     modoRings = !modoRings;
-
+    enigma.printConfig();
     if (modoRings) {
         botonRingSettings.textContent = "< Rotor Settings";
         const titulo = document.querySelector(".rotors-title");
