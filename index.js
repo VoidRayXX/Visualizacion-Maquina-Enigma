@@ -59,6 +59,8 @@ function dibujarFlecha(origenId, destinoId, svgID, sentido) {
     const svg = document.getElementById(svgID);
     svg.innerHTML = ""; // limpiar antes de dibujar otra
 
+    // console.log(origenId)
+    // console.log(destinoId)
     const origen = document.getElementById(origenId).getBoundingClientRect();
     const destino = document.getElementById(destinoId).getBoundingClientRect();
 
@@ -110,9 +112,9 @@ let ultimoCamino = null;
 function manejarTecla(letra){
     const {letraEncriptada, caminoEncriptacion} = enigma.encriptarLetra(letra);
     ultimoCamino = caminoEncriptacion;
-    console.log(caminoEncriptacion);
-    // actualizarRotoresVisuales();
+    actualizarRotoresVisuales();
     mostrarConfigActual();
+
     trazarCamino(caminoEncriptacion);
     agregarLetraASentencia(letraEncriptada, "textoEncriptado", false);
     agregarLetraASentencia(letra, "textoOriginal", true);
@@ -156,12 +158,12 @@ function actualizarRotorVisual(rotorID, rotorObj) {
     const mapeoRotado = 
         mapeo.slice(rotorObj.posInicial) + mapeo.slice(0, rotorObj.posInicial);
 
-    // reasignar letras en la columna izquierda
+    //reasignar letras en la columna izquierda
     for (let i = 0; i < 26; i++) {
         columnaIzq[i].textContent = abecedarioRotado[i];
     }
 
-    // reasignar letras en la columna derecha
+    //reasignar letras en la columna derecha
     for (let i = 0; i < 26; i++) {
         columnaDer[i].textContent = mapeoRotado[i];
     }
@@ -182,53 +184,76 @@ function agregarLetraASentencia(letra, divID, original) {
     textoSentencia.innerHTML = texto + ' <span class="cursor-parpadeante">&nbsp;_</span>';
 }
 
+function obtenerIndiceLetraRotor(letra, nombreRotor = "" , columna = null){
+    nombreRotor = nombreRotor.split("-")[0];
+    let rotor;
+    if(nombreRotor === "rotorDer") rotor = enigma.rotores.rotorDer;
+    else if(nombreRotor === "rotorCentral") rotor = enigma.rotores.rotorCentral;
+    else if(nombreRotor === "rotorIzq") rotor = enigma.rotores.rotorIzq;
+    else if(nombreRotor === "reflector") return enigma.rotores.reflector.indexOf(letra);
+    else return abecedario.indexOf(letra);
 
-function trazarCamino(caminoEncriptacion){
+    return rotor.buscarIndiceLetra(columna, letra);
+}
+
+
+function trazarCamino(caminoEncriptacion) {
     const camino = [
-        "plugboard-der-",
-        "plugboard-izq-",
-        "rotorDer-der-",
-        "rotorDer-izq-",
-        "rotorCentral-der-",
-        "rotorCentral-izq-",
-        "rotorIzq-der-",
-        "rotorIzq-izq-",
-        "reflector-der-",
-        "reflector-izq-",
-        "reflector-der-",
-        "rotorIzq-izq-",
-        "rotorIzq-der-",
-        "rotorCentral-izq-",
-        "rotorCentral-der-",
-        "rotorDer-izq-",
-        "rotorDer-der-",
-        "plugboard-izq-",
-        "plugboard-der-",
+        "plugboard-der",
+        "plugboard-izq",
+        "rotorDer-der",
+        "rotorDer-izq",
+        "rotorCentral-der",
+        "rotorCentral-izq",
+        "rotorIzq-der",
+        "rotorIzq-izq",
+        "reflector-der",
+        "reflector-izq",
+        "reflector-der",
+        "rotorIzq-izq",
+        "rotorIzq-der",
+        "rotorCentral-izq",
+        "rotorCentral-der",
+        "rotorDer-izq",
+        "rotorDer-der",
+        "plugboard-izq",
+        "plugboard-der",
     ];
 
     let sentido = "ida";
     const inputUsuario = caminoEncriptacion[0][0];
-    const origenInicial = "teclado-" + inputUsuario;
-    const destinoInicial = "plugboard-der-" + inputUsuario;
+    const origenInicial = "teclado-" + obtenerIndiceLetraRotor(inputUsuario);
+    const destinoInicial = "plugboard-der-" + obtenerIndiceLetraRotor(inputUsuario);
     const idFlechaInicial = "flecha0";
     dibujarFlecha(origenInicial, destinoInicial, idFlechaInicial, sentido);
 
-    for(let i = 0; i < caminoEncriptacion.length - 1; i++){
+    for (let i = 0; i < caminoEncriptacion.length - 1; i++) {
         let columnaOrigen = 1;
         let columnaDestino = 0;
 
-        if(i % 2 != 0){
+        if (i % 2 != 0) {
             columnaOrigen = 0;
             columnaDestino = 1;
-        };
+        }
 
-        const origen = camino[i] + caminoEncriptacion[i][columnaOrigen];
-        const destino = camino[i+1] + caminoEncriptacion[i+1][columnaDestino];
+        // Obtener letras del camino
+        const letraOrigen = caminoEncriptacion[i][columnaOrigen];
+        const letraDestino = caminoEncriptacion[i + 1][columnaDestino];
+
+        // Convertir letras a índices basados en la posición fija del elemento
+        const indiceOrigen = obtenerIndiceLetraRotor(letraOrigen, camino[i], columnaOrigen);
+        const indiceDestino = obtenerIndiceLetraRotor(letraDestino, camino[i+1], columnaDestino);
+
+        // Usar índices para construir los IDs
+        const origen = camino[i] + "-" + indiceOrigen;
+        const destino = camino[i + 1] + "-" + indiceDestino;
         const idFlecha = "flecha" + (i + 1).toString();
-        console.log(idFlecha);
-        console.log(origen,"->", destino);
 
-        if(i > 8){
+        console.log(idFlecha)
+        console.log(origen, destino)
+        console.log("*********")
+
+        if (i > 8) {
             sentido = "vuelta";
         }
 
@@ -236,11 +261,10 @@ function trazarCamino(caminoEncriptacion){
     }
 
     const letraEncriptada = caminoEncriptacion[caminoEncriptacion.length - 1][0];
-    const origenFinal = "plugboard-der-" + letraEncriptada;
-    const destinoFinal = "teclado-" + letraEncriptada;
+    const origenFinal = "plugboard-der-" + obtenerIndiceLetraRotor(letraEncriptada);
+    const destinoFinal = "teclado-" + obtenerIndiceLetraRotor(letraEncriptada);
     const idFlechaFinal = "flecha19";
     dibujarFlecha(origenFinal, destinoFinal, idFlechaFinal, sentido);
-
 }
 
 function borrarSVGs(){
@@ -316,10 +340,11 @@ function actualizarConfig(event){
 
 
 function crearColumna(columna, secuencia, textoID, esTeclado = false){
+    let numFilas = 0;
     for(let letra of secuencia){
         const span = document.createElement("span");
         span.textContent = letra;
-        span.id = textoID + letra;
+        span.id = textoID + String(numFilas);
 
         if(esTeclado){
             span.classList.add("tecla");
@@ -327,7 +352,9 @@ function crearColumna(columna, secuencia, textoID, esTeclado = false){
                 manejarTecla(letra);
             });
         }
+        
         columna.append(span);
+        numFilas++;
     }
 }
 
