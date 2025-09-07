@@ -8,6 +8,27 @@
 </head>
 <body>
 
+<div class="file-upload-compact">
+    <div class="upload-left">
+        <div class="upload-icon-compact">📁</div>
+        <div>
+            <div class="upload-text-compact">Cargar archivo</div>
+            <div class="upload-subtext-compact">Solo archivos .txt</div>
+        </div>
+    </div>
+    
+    <div class="upload-area-compact" id="uploadAreaCompact">
+        <input type="file" id="fileInputCompact" class="file-input-compact" accept=".txt">
+        <div class="upload-placeholder" id="uploadPlaceholder">Arrastra o haz clic aquí</div>
+    </div>
+    
+    <div class="action-buttons-compact">
+        <button class="btn-compact btn-encrypt-compact" id="encryptBtnCompact">🔐 Encriptar</button>
+        <button class="btn-compact btn-download-compact" id="downloadBtnCompact">⬇️ Descargar</button>
+        <button class="btn-compact btn-clear-compact" id="clearBtnCompact">🗑️ Limpiar</button>
+    </div>
+</div>
+
 <div class="header">
   <div class="enigma-config">
     <h2 class="rotors-title">Rotor Settings</h2>
@@ -26,11 +47,12 @@
 
     <div class="rotor-group">
       <select>
-        <option>I</option>
+        <option selected>I</option>
         <option>II</option>
         <option>III</option>
         <option>IV</option>
         <option>V</option>
+        <option>VI</option>
       </select>
       <div class="rotor-enigma">
         <button>-</button>
@@ -42,10 +64,11 @@
     <div class="rotor-group">
       <select>
         <option>I</option>
-        <option>II</option>
+        <option selected>II</option>
         <option>III</option>
         <option>IV</option>
         <option>V</option>
+        <option>VI</option>
       </select>
       <div class="rotor-enigma">
         <button>-</button>
@@ -58,9 +81,10 @@
       <select>
         <option>I</option>
         <option>II</option>
-        <option>III</option>
+        <option selected>III</option>
         <option>IV</option>
         <option>V</option>
+        <option>VI</option>
       </select>
       <div class="rotor-enigma">
         <button>-</button>
@@ -71,14 +95,11 @@
   </div>
   <button class="ring-settings">Ring Settings> </button>
 
-
-  
-
  <div class="plugboard-container">
   <h2 class="plugboard-title">Plugboard Connections (Steckerbrett)</h2>
 
   <div class="plugboard-grid">
-    <div class="plugboard-row"> <!-- A–G -->
+    <div class="plugboard-row">
       <span class="plugboard-button">A</span>
       <span class="plugboard-button">B</span>
       <span class="plugboard-button">C</span>
@@ -87,7 +108,7 @@
       <span class="plugboard-button">F</span>
       <span class="plugboard-button">G</span>
     </div>
-    <div class="plugboard-row"> <!-- H–N -->
+    <div class="plugboard-row">
       <span class="plugboard-button">H</span>
       <span class="plugboard-button">I</span>
       <span class="plugboard-button">J</span>
@@ -96,7 +117,7 @@
       <span class="plugboard-button">M</span>
       <span class="plugboard-button">N</span>
     </div>
-    <div class="plugboard-row"> <!-- O–U -->
+    <div class="plugboard-row">
       <span class="plugboard-button">O</span>
       <span class="plugboard-button">P</span>
       <span class="plugboard-button">Q</span>
@@ -105,7 +126,7 @@
       <span class="plugboard-button">T</span>
       <span class="plugboard-button">U</span>
     </div>
-    <div class="plugboard-row"> <!-- V–Z -->
+    <div class="plugboard-row">
       <span class="plugboard-button">V</span>
       <span class="plugboard-button">W</span>
       <span class="plugboard-button">X</span>
@@ -178,6 +199,7 @@
     </div>
   </div>
 </div>
+
   
   <script type="module" src="index.js"></script>
 </body>

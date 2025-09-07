@@ -15,17 +15,8 @@ export default class Plugboard {
         letra1 = letra1.toUpperCase();
         letra2 = letra2.toUpperCase();
 
-        if(this.plugboard.has(letra1)){
-            const antiguaConex = this.plugboard.get(letra1);
-            this.plugboard.delete(antiguaConex);
-            this.plugboard.delete(letra1);
-        }
-
-        if(this.plugboard.has(letra2)){
-            const antiguaConex = this.plugboard.get(letra2);
-            this.plugboard.delete(antiguaConex);
-            this.plugboard.delete(letra2);
-        }
+        this.eliminarConex(letra1);
+        this.eliminarConex(letra2);
 
         this.plugboard.set(letra1, letra2);
         this.plugboard.set(letra2, letra1);

@@ -48,6 +48,16 @@ export default class Enigma {
 
     printConfig(){
         this.rotores.printConfig();
+
+        const offsetIzq = String.fromCharCode(this.rotores.rotorIzq.offset + 65);
+        const offsetCentral = String.fromCharCode(this.rotores.rotorCentral.offset + 65);
+        const offsetDer = String.fromCharCode(this.rotores.rotorDer.offset + 65);
+
+        console.log("Anillo Izquierdo: " + offsetIzq);
+        console.log("Anillo Central: " + offsetCentral);
+        console.log("Anillo Derecho: " + offsetDer);
+
+        console.log("***********************");
     }
 
 }

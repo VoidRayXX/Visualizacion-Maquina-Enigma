@@ -1,3 +1,302 @@
+body {
+  margin: 0;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+  background: #f0f2f5;
+}
+
+/* Sección de carga compacta */
+.file-upload-compact {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 15px 20px;
+  margin: 10px auto 20px auto;
+  max-width: 600px;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  min-height: 60px;
+}
+
+.upload-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.upload-icon-compact {
+  font-size: 24px;
+  opacity: 0.9;
+}
+
+.upload-text-compact {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.upload-subtext-compact {
+  font-size: 11px;
+  opacity: 0.8;
+  margin-top: 2px;
+}
+
+.upload-area-compact {
+  background: rgba(255,255,255,0.1);
+  border: 1px dashed rgba(255,255,255,0.5);
+  border-radius: 6px;
+  padding: 8px 12px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  flex: 1;
+  min-height: 35px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.upload-area-compact:hover {
+  background: rgba(255,255,255,0.2);
+  border-color: rgba(255,255,255,0.8);
+  transform: translateY(-1px);
+}
+
+.upload-area-compact.dragover {
+  background: rgba(255,255,255,0.3);
+  border-color: white;
+  transform: scale(1.01);
+}
+
+.file-input-compact {
+  display: none;
+}
+
+.upload-placeholder {
+  font-size: 12px;
+  opacity: 0.8;
+  text-align: center;
+}
+
+.file-selected {
+  font-size: 12px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.action-buttons-compact {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.btn-compact {
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: bold;
+  border: none;
+  border-radius: 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  min-width: 70px;
+}
+
+.btn-encrypt-compact {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(102,126,234,0.4);
+}
+
+.btn-encrypt-compact:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 12px rgba(102,126,234,0.6);
+}
+
+.btn-download-compact {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(245,87,108,0.4);
+  display: none;
+}
+
+.btn-download-compact.active {
+  display: inline-block;
+}
+
+.btn-download-compact:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 12px rgba(245,87,108,0.6);
+}
+
+.btn-clear-compact {
+  background: rgba(255,255,255,0.2);
+  color: white;
+  border: 1px solid rgba(255,255,255,0.5);
+}
+
+.btn-clear-compact:hover {
+  background: rgba(255,255,255,0.3);
+  transform: translateY(-1px);
+}
+
+/* Estilos del header original */
+.header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 20%;
+}
+
+.enigma-config {
+  background: #d8a84c;
+  border: 2px solid #7a5a2f;
+  padding: 6px;
+  border-radius: 6px;
+  display: inline-block;
+  box-shadow: 1px 1px 5px rgba(0,0,0,0.25);
+  font-family: Arial, sans-serif;
+  transform: scale(0.9);
+  transform-origin: top left;
+}
+
+.rotors-title {
+  font-size: 1.2em;
+  font-weight: bold;
+  margin-bottom: 8px;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.row {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+}
+
+.rotor-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 2px;
+}
+
+select {
+  font-size: 0.7vw;
+  padding: 1px 3px;
+  margin-bottom: 4px;
+  width: 7vw;
+  max-width: 50px;
+  text-align: center;
+}
+
+.rotor-enigma {
+  background: #eee;
+  border: 1px solid #aaa;
+  border-radius: 4px;
+  padding: 3px;
+  text-align: center;
+  width: 7vw;
+  max-width: 50px;
+  min-width: 35px;
+}
+
+.rotor-enigma button {
+  width: 100%;
+  padding: 1px;
+  margin: 1px 0;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.rotor-enigma .window {
+  font-size: 0.85vw;
+  font-weight: bold;
+  background: #fff;
+  border: 1px solid #888;
+  margin: 3px 0;
+  padding: 3px 0;
+}
+
+.desactivado {
+  opacity: 0.5;
+  pointer-events: none;
+  user-select: none;
+}
+
+.ring-settings { 
+  display: block; 
+  margin: 5px auto; 
+}
+
+.plugboard-container {
+  text-align: center;
+  padding: 12px;
+  background-color: #1e1e1e;
+  color: #fff;
+  border-radius: 8px;
+  margin-top: 10px;
+}
+
+.plugboard-title {
+  font-size: 1.2em;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.plugboard-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+}
+
+.plugboard-row {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.plugboard-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  background-color: white;
+  color: black;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.1s, background-color 0.2s;
+}
+
+.plugboard-button:hover {
+  background-color: orange;
+  transform: scale(1.1);
+}
+
+.plugboard-button.seleccionado {
+  background-color: #4CAF50;
+  color: white;
+  border: 2px solid #2E7D32;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in {
+  animation: fadeIn 0.3s ease;
+}
+
+/* Estilos existentes */
 .cursor-parpadeante {
   animation: parpadeo 1s steps(1) infinite;
 }
@@ -8,24 +307,24 @@
   100% { opacity: 1; }
 }
 
+
+
 .contenedor {
-  border: 3px solid black;   /* borde del rectángulo */
-  display: flex;             /* flex para dos columnas */
+  border: 3px solid black;
+  display: flex;
   justify-content: space-between;
-  width: 100%;               /* ocupa el ancho disponible */
-  max-width: 150px;          /* límite en escritorio */
+  width: 100%;
+  max-width: 150px;
   padding: 10px;
   box-sizing: border-box;
 }
 
-/* Cada columna de letras */
 .columna {
   display: flex;
-  flex-direction: column;    /* una letra debajo de la otra */
-  gap: 5px;                  /* espacio entre letras */
+  flex-direction: column;
+  gap: 5px;
 }
 
-/* ROTORES - FORZAR UNA SOLA FILA CON MEJOR DISTRIBUCIÓN */
 .rotores {
   margin-left: 35%;
   margin-top: 30px;
@@ -58,7 +357,6 @@
   background-color: yellow;
 }
 
-/* Título de cada bloque */
 .titulo-bloque {
   font-weight: bold;
   font-size: 14px;
@@ -70,11 +368,11 @@
 .bloque {
   display: flex;
   flex-direction: column;
-  flex: none; /* Evitar que flexbox cambie el tamaño */
+  flex: none;
   align-items: center;
-  width: 7.8125vw;   /* proporcional al ancho de la pantalla */
-  max-width: 150px;  /* nunca más grande de 150px */
-  min-width: 80px;   /* evita que en pantallas muy chicas quede ilegible */
+  width: 7.8125vw;
+  max-width: 150px;
+  min-width: 80px;
 }
 
 #svgs {
@@ -125,25 +423,23 @@
   font-size: larger;
 }
 
-
-/* SVG encima */
 .flechas {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none; /* no bloquear clics */
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
 }
 
 #svgs svg {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    pointer-events: none;
-    z-index: 10;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 10;
 }
 
 .header {
@@ -164,13 +460,13 @@
 .enigma-config {
   background: #d8a84c;
   border: 2px solid #7a5a2f;
-  padding: 6px;                /* antes 10px */
+  padding: 6px;
   border-radius: 6px;
   display: inline-block;
-  box-shadow: 1px 1px 5px rgba(0,0,0,0.25); /* sombra más ligera */
+  box-shadow: 1px 1px 5px rgba(0,0,0,0.25);
   font-family: Arial, sans-serif;
-  transform: scale(0.9);       /* escala toda la caja al 90% */
-  transform-origin: top left;  /* se reduce desde arriba/izquierda */
+  transform: scale(0.9);
+  transform-origin: top left;
 }
 
 .ring-settings { 
@@ -181,22 +477,22 @@
 .row {
   display: flex;
   justify-content: center;
-  gap: 4px;                    /* espacio entre rotores reducido */
+  gap: 4px;
 }
 
 .rotor-group {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: 0 2px;               /* antes 4px */
+  margin: 0 2px;
 }
 
 select {
   font-size: 0.7vw;
-  padding: 1px 3px;            /* más compacto */
-  margin-bottom: 4px;          /* menos espacio */
+  padding: 1px 3px;
+  margin-bottom: 4px;
   width: 7vw;
-  max-width: 50px;             /* más angosto que antes (60px) */
+  max-width: 50px;
   text-align: center;
 }
 
@@ -204,23 +500,23 @@ select {
   background: #eee;
   border: 1px solid #aaa;
   border-radius: 4px;
-  padding: 3px;                /* más apretado */
+  padding: 3px;
   text-align: center;
   width: 7vw;
-  max-width: 50px;             /* más angosto */
+  max-width: 50px;
   min-width: 35px;
 }
 
 .rotor-enigma button {
   width: 100%;
   padding: 1px;
-  margin: 1px 0;               /* más apretado */
-  font-size: 11px;             /* más pequeño */
+  margin: 1px 0;
+  font-size: 11px;
   cursor: pointer;
 }
 
 .rotor-enigma .window {
-  font-size: 0.85vw;           /* un poco más chico */
+  font-size: 0.85vw;
   font-weight: bold;
   background: #fff;
   border: 1px solid #888;
@@ -228,10 +524,10 @@ select {
   padding: 3px 0;
 }
 
-.rotor-enigma.desactivado {
-  opacity: 0.5;               /* aspecto apagado */
-  pointer-events: none;       /* bloquea clics, inputs, etc. */
-  user-select: none;          /* evita selección de texto */
+.desactivado {
+  opacity: 0.5;
+  pointer-events: none;
+  user-select: none;
 }
 
 .plugboard-container {
@@ -295,11 +591,10 @@ select {
 }
 
 .plugboard-button.seleccionado {
-    background-color: #4CAF50; /* verde intenso */
-    color: white;
-    border: 2px solid #2E7D32;
+  background-color: #4CAF50;
+  color: white;
+  border: 2px solid #2E7D32;
 }
-
 
 .sentencias-container::-webkit-scrollbar {
   width: 8px;
@@ -318,137 +613,3 @@ select {
 .sentencias-container::-webkit-scrollbar-thumb:hover {
   background: rgba(0,0,0,0.5);
 }
-
-
-/* RESPONSIVE - MANTENER ROTORES EN UNA FILA CON ESPACIADO MÁXIMO */
-@media (max-width: 1400px) {
-  .bloque {
-    width: 110px !important;
-    min-width: 110px !important;
-  }
-}
-
-@media (max-width: 1200px) {
-  .bloque {
-    width: 100px !important;
-    min-width: 100px !important;
-  }
-  .enigma-config {
-    transform: scale(0.75);
-  }
-}
-
-@media (max-width: 1000px) {
-  .bloque {
-    width: 90px !important;
-    min-width: 90px !important;
-  }
-  .enigma-config {
-    transform: scale(0.7);
-  }
-}
-
-@media (max-width: 900px) {
-  .bloque {
-    width: 80px !important;
-    min-width: 80px !important;
-  }
-  .rotores {
-    padding: 15px 5px;
-  }
-  .enigma-config {
-    transform: scale(0.65);
-  }
-}
-
-@media (max-width: 768px) {
-  .bloque {
-    width: 70px !important;
-    min-width: 70px !important;
-  }
-  .rotores {
-    padding: 10px 5px;
-  }
-  .enigma-config {
-    transform: scale(0.6);
-  }
-  .contenedor {
-    max-width: 120px;
-    padding: 8px;
-  }
-}
-
-@media (max-width: 600px) {
-  .bloque {
-    width: 65px !important;
-    min-width: 65px !important;
-  }
-  .rotores {
-    padding: 8px 5px;
-    margin-top: 15px;
-  }
-  .enigma-config {
-    transform: scale(0.55);
-  }
-  .sentencias-container {
-    width: 95%;
-    max-height: 150px;
-    padding: 15px;
-  }
-  .sentencias {
-    font-size: 14px;
-  }
-  #textoEncriptado {
-    font-size: 16px;
-  }
-  #teclado {
-    width: 100%;
-    max-width: 200px;
-  }
-}
-
-@media (max-width: 480px) {
-  .bloque {
-    width: 55px !important;
-    min-width: 55px !important;
-  }
-  .rotores {
-    padding: 5px;
-  }
-  .enigma-config {
-    transform: scale(0.5);
-  }
-  .titulo-bloque {
-    font-size: 10px;
-  }
-  .contenedor {
-    max-width: 100px;
-    padding: 6px;
-  }
-  .plugboard-row {
-    gap: 4px;
-  }
-  .plugboard-row input {
-    width: 20px;
-    height: 18px;
-  }
-}
-
-/* ASEGURAR QUE SIEMPRE SEA UNA SOLA FILA */
-@media (max-width: 400px) {
-  .rotores {
-    overflow-x: scroll;
-    padding: 5px 2px 15px 2px;
-  }
-  
-  .bloque {
-    width: 50px !important;
-    min-width: 50px !important;
-  }
-}
-
-#teclado {
-  width: 100%;
-  max-width: 250px;
-}
-

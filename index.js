@@ -4,17 +4,26 @@ import Enigma from "./enigma/enigma.js";
 
 const abecedario = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-let rotorIzq = new Rotor("I", "a", "a");
-let rotorCentral = new Rotor("II", "a", "a");
-let rotorDer = new Rotor("III", "a", "a");
+let rotorIzq = new Rotor("I", "A", "A");
+let rotorCentral = new Rotor("II", "A", "A");
+let rotorDer = new Rotor("III", "A", "A");
 
 let rotores = new Rotores(rotorIzq, rotorCentral, rotorDer, "B");
 
 let enigma = new Enigma(rotores);
-// enigma.conectarLetras("B", "H");
 
 const letrasEncriptadas = [];
 const letrasOriginales = [];
+
+const rotorSettings = ["A", "A", "A"];
+const ringSettings = ["A", "A", "A"];
+let modoRings = false;
+
+const diccPosiciones = new Map([
+    ["letraIzq", 0],
+    ["letraCen", 1],
+    ["letraDer", 2],
+]);
 
 const configuraciones = new Map([
     ["I", ["EKMFLGDQVZNTOWYHXUSPAIBRCJ", "Q"]],
@@ -27,6 +36,11 @@ const configuraciones = new Map([
     ["C", ["FVPJIAOYEDRZXWGCTKUQSBNMHL", null]],
     ["plugboard", [abecedario, null]]
 ]);
+
+function indicarPosRotor(id){
+    const posRotor = diccPosiciones.get(id);
+    return posRotor;
+}
 
 
 function dividirEnBloques(texto, tamaño = 5) {
@@ -100,14 +114,56 @@ function manejarTecla(letra){
     agregarLetraASentencia(letraEncriptada, "textoEncriptado", false);
     agregarLetraASentencia(letra, "textoOriginal", true);
     mostrarConfigActual();
-    // enigma.printConfig();
     actualizarRotoresVisuales();
+}
+
+function mostrarConfigActual(){
+    const {letraIzq, letraCen, letraDer} = enigma.mostrarConfigActual();
+
+    rotorSettings[0] = letraIzq;
+    rotorSettings[1] = letraCen;
+    rotorSettings[2] = letraDer;
+
+    if(!modoRings){
+        const rotorIzq = document.getElementById("letraIzq");
+        const rotorCen = document.getElementById("letraCen");
+        const rotorDer = document.getElementById("letraDer");
+
+        rotorDer.textContent = letraDer;
+        rotorCen.textContent = letraCen;
+        rotorIzq.textContent = letraIzq;
+    }   
 }
 
 function actualizarRotoresVisuales(){
     actualizarRotorVisual("rotorDer", enigma.rotores.rotorDer);
     actualizarRotorVisual("rotorCentral", enigma.rotores.rotorCentral);
     actualizarRotorVisual("rotorIzq", enigma.rotores.rotorIzq);
+}
+
+function actualizarRotorVisual(rotorID, rotorObj) {
+    const rotorDiv = document.getElementById(rotorID);
+    const columnas = rotorDiv.querySelectorAll("div");
+
+    const columnaIzq = columnas[0].querySelectorAll("span");
+    const columnaDer = columnas[1].querySelectorAll("span");
+
+    const abecedarioRotado = 
+        abecedario.slice(rotorObj.posInicial) + abecedario.slice(0, rotorObj.posInicial);
+
+    const mapeo = rotorObj.rotor.map(pair => pair[1]).join("");
+    const mapeoRotado = 
+        mapeo.slice(rotorObj.posInicial) + mapeo.slice(0, rotorObj.posInicial);
+
+    // reasignar letras en la columna izquierda
+    for (let i = 0; i < 26; i++) {
+        columnaIzq[i].textContent = abecedarioRotado[i];
+    }
+
+    // reasignar letras en la columna derecha
+    for (let i = 0; i < 26; i++) {
+        columnaDer[i].textContent = mapeoRotado[i];
+    }
 }
 
 function agregarLetraASentencia(letra, divID, original) {
@@ -210,29 +266,19 @@ function reiniciarPag(){
     borrarSentencias();
 }
 
-function mostrarConfigActual(){
-    const {letraIzq, letraCen, letraDer} = enigma.mostrarConfigActual();
-    const rotorIzq = document.getElementById("letraIzq");
-    const rotorCen = document.getElementById("letraCen");
-    const rotorDer = document.getElementById("letraDer");
-
-    rotorDer.textContent = letraDer;
-    rotorCen.textContent = letraCen;
-    rotorIzq.textContent = letraIzq;
-}
 
 function cambiarConfigEnigma(){
-    const letraIzq = document.getElementById("letraIzq").textContent;
-    const letraCen = document.getElementById("letraCen").textContent;
-    const letraDer = document.getElementById("letraDer").textContent;
+    const letraIzq = rotorSettings[0];
+    const letraCen = rotorSettings[1];
+    const letraDer = rotorSettings[2];
 
     const selects = document.querySelectorAll(".rotor-group select");
     let [reflector, rotorIzq, rotorCentral, rotorDer] = Array.from(selects).map(sel => sel.value);
     
     //variables globales
-    rotorIzq = new Rotor(rotorIzq, letraIzq, "a");
-    rotorCentral = new Rotor(rotorCentral, letraCen, "a");
-    rotorDer = new Rotor(rotorDer, letraDer, "a");
+    rotorIzq = new Rotor(rotorIzq, letraIzq, ringSettings[0]);
+    rotorCentral = new Rotor(rotorCentral, letraCen, ringSettings[1]);
+    rotorDer = new Rotor(rotorDer, letraDer, ringSettings[2]);
 
     rotores = new Rotores(rotorIzq, rotorCentral, rotorDer, reflector);
     enigma = new Enigma(rotores);
@@ -243,6 +289,7 @@ function actualizarConfig(event){
     const direccion = boton.textContent;
     const rotor = boton.closest('.rotor-enigma');
     const ventana = rotor.querySelector('.window');
+    const idVentana = ventana.id;
 
     const letraActual = ventana.textContent;
     let posLetra = letraActual.charCodeAt() - 65;
@@ -252,36 +299,17 @@ function actualizarConfig(event){
     posLetra = (posLetra + 26) % 26;
     const nuevaLetra = abecedario[posLetra];
     ventana.textContent = nuevaLetra;
+
+    const posRotor = indicarPosRotor(idVentana);
+
+    // Aquí cambia según el modo
+    if (modoRings) ringSettings[posRotor] = nuevaLetra;
+    else rotorSettings[posRotor] = nuevaLetra;
+    
     cambiarConfigEnigma();
     reiniciarPag();
-
     actualizarRotoresVisuales();
-
-}
-
-function actualizarRotorVisual(rotorID, rotorObj) {
-    const rotorDiv = document.getElementById(rotorID);
-    const columnas = rotorDiv.querySelectorAll("div");
-
-    const columnaIzq = columnas[0].querySelectorAll("span");
-    const columnaDer = columnas[1].querySelectorAll("span");
-
-    const abecedarioRotado = 
-        abecedario.slice(rotorObj.posInicial) + abecedario.slice(0, rotorObj.posInicial);
-
-    const mapeo = rotorObj.rotor.map(pair => pair[1]).join("");
-    const mapeoRotado = 
-        mapeo.slice(rotorObj.posInicial) + mapeo.slice(0, rotorObj.posInicial);
-
-    // reasignar letras en la columna izquierda
-    for (let i = 0; i < 26; i++) {
-        columnaIzq[i].textContent = abecedarioRotado[i];
-    }
-
-    // reasignar letras en la columna derecha
-    for (let i = 0; i < 26; i++) {
-        columnaDer[i].textContent = mapeoRotado[i];
-    }
+    
 }
 
 
@@ -355,36 +383,71 @@ const selects = document.querySelectorAll(".rotor-group select");
 
 // Recorre cada uno y le agrega un listener
 selects.forEach(sel => {
-  sel.addEventListener("change", (e) => {
-    const grupo = e.target.closest(".rotor-group");
-    const reflector = grupo?.dataset.reflector;
+    sel.addEventListener("change", (e) => {
+        const grupo = e.target.closest(".rotor-group");
+        const reflector = grupo?.dataset.reflector;
 
-    const nombreReflector = e.target.value;
+        const nombreReflector = e.target.value;
 
-    reiniciarPag();
+        reiniciarPag();
 
-    if(reflector)  crearRotor("reflector", nombreReflector);
+        if(reflector)  crearRotor("reflector", nombreReflector);
 
-    cambiarConfigEnigma();
+        cambiarConfigEnigma();
 
-    actualizarRotoresVisuales();
-  });
+        actualizarRotoresVisuales();
+    });
 });
+
+function mostrarRingSettings() {
+    const letraIzq = document.getElementById("letraIzq");
+    const letraCen = document.getElementById("letraCen");
+    const letraDer = document.getElementById("letraDer");
+
+    letraIzq.textContent = ringSettings[0];
+    letraCen.textContent = ringSettings[1];
+    letraDer.textContent = ringSettings[2];
+}
+
+
 
 const botonRingSettings = document.querySelector('.ring-settings');
-botonRingSettings.addEventListener('click', event => {
-    console.log("hola")
+botonRingSettings.addEventListener('click', () => {
+    modoRings = !modoRings;
+
+    if (modoRings) {
+        botonRingSettings.textContent = "< Rotor Settings";
+        const titulo = document.querySelector(".rotors-title");
+        titulo.textContent = "Ring Settings";
+        selects.forEach(sel => sel.classList.add("desactivado"));
+        mostrarRingSettings();
+    } else {
+        botonRingSettings.textContent = "Ring Settings >";
+        const titulo = document.querySelector(".rotors-title");
+        titulo.textContent = "Rotor Settings";
+        selects.forEach(sel => sel.classList.remove("desactivado"));
+        mostrarConfigActual(); // vuelve a mostrar las posiciones normales
+    }
 });
 
+//esto es para input manual de configuraciones
 document.querySelectorAll(".rotor-enigma .window").forEach(win => {
   win.addEventListener("input", () => {
     let val = win.textContent.toUpperCase().replace(/[^A-Z]/g, "");
-    win.textContent = val.slice(-1) || "A"; // siempre 1 letra
+    const contenido = val.slice(-1) || "A"; // siempre 1 letra
+    win.textContent = contenido;
+    const idVentana = win.id;
+    const posRotor = indicarPosRotor(idVentana);
+
+    if (modoRings) ringSettings[posRotor] = contenido;
+    else rotorSettings[posRotor] = contenido;
+
     cambiarConfigEnigma();
     reiniciarPag();
     actualizarRotoresVisuales();
   });
 });
+
 
 
 const coloresPlugboard = [

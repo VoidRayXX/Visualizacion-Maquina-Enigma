@@ -31,7 +31,6 @@ export default class Rotores {
         console.log("Rotor Izquierdo " + this.rotorIzq.getInfo());
         console.log("Rotor Central " + this.rotorCentral.getInfo());
         console.log("Rotor Derecho " + this.rotorDer.getInfo());
-        console.log("***********************");
     }
 
     encriptarLetra(letra){
