@@ -12,6 +12,11 @@ export default class Enigma {
     }
 
     encriptarLetra(letra){
+        if(!letra.match(/[a-zA-Z]/)) return{
+            letraEncriptada: letra,
+            caminoEncriptacion: null,
+        }
+
         const letraPgb = this.plugboard.obtenerLetra(letra);
         const {letraRotores, caminoEncriptacion} = this.rotores.encriptarLetra(letraPgb);
         const letraEncriptada = this.plugboard.obtenerLetra(letraRotores);

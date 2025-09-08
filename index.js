@@ -59,8 +59,6 @@ function dibujarFlecha(origenId, destinoId, svgID, sentido) {
     const svg = document.getElementById(svgID);
     svg.innerHTML = ""; // limpiar antes de dibujar otra
 
-    // console.log(origenId)
-    // console.log(destinoId)
     const origen = document.getElementById(origenId).getBoundingClientRect();
     const destino = document.getElementById(destinoId).getBoundingClientRect();
 
@@ -248,10 +246,6 @@ function trazarCamino(caminoEncriptacion) {
         const origen = camino[i] + "-" + indiceOrigen;
         const destino = camino[i + 1] + "-" + indiceDestino;
         const idFlecha = "flecha" + (i + 1).toString();
-
-        console.log(idFlecha)
-        console.log(origen, destino)
-        console.log("*********")
 
         if (i > 8) {
             sentido = "vuelta";
@@ -449,6 +443,7 @@ botonRingSettings.addEventListener('click', () => {
         titulo.textContent = "Ring Settings";
         selects.forEach(sel => sel.classList.add("desactivado"));
         mostrarRingSettings();
+
     } else {
         botonRingSettings.textContent = "Ring Settings >";
         const titulo = document.querySelector(".rotors-title");
@@ -457,6 +452,8 @@ botonRingSettings.addEventListener('click', () => {
         mostrarConfigActual(); // vuelve a mostrar las posiciones normales
     }
 });
+
+
 
 //esto es para input manual de configuraciones
 document.querySelectorAll(".rotor-enigma .window").forEach(win => {
@@ -555,6 +552,126 @@ document.querySelectorAll(".plugboard-button").forEach((boton) => {
   });
 });
 
+let selectedFile = null;
+let encryptedContent = null;
+
+// Referencias DOM
+const uploadAreaCompact = document.getElementById('uploadAreaCompact');
+const fileInputCompact = document.getElementById('fileInputCompact');
+const uploadPlaceholder = document.getElementById('uploadPlaceholder');
+const encryptBtnCompact = document.getElementById('encryptBtnCompact');
+const downloadBtnCompact = document.getElementById('downloadBtnCompact');
+const clearBtnCompact = document.getElementById('clearBtnCompact');
+
+// Event listeners para drag & drop
+uploadAreaCompact.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    uploadAreaCompact.classList.add('dragover');
+});
+
+uploadAreaCompact.addEventListener('dragleave', (e) => {
+    e.preventDefault();
+    uploadAreaCompact.classList.remove('dragover');
+});
+
+uploadAreaCompact.addEventListener('drop', (e) => {
+    e.preventDefault();
+    uploadAreaCompact.classList.remove('dragover');
+    
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+        handleFileSelect(files[0]);
+    }
+});
+
+// Event listener para click en área de carga
+uploadAreaCompact.addEventListener('click', () => {
+    fileInputCompact.click();
+});
+
+// Event listener para selección de archivo
+fileInputCompact.addEventListener('change', (e) => {
+    if (e.target.files.length > 0) {
+        handleFileSelect(e.target.files[0]);
+    }
+});
+
+// Función para manejar selección de archivo
+function handleFileSelect(file) {
+    if (!file.name.toLowerCase().endsWith('.txt')) {
+        alert('Por favor, selecciona solo archivos .txt');
+        return;
+    }
+    
+    selectedFile = file;
+    uploadPlaceholder.innerHTML = `<div class="file-selected">${file.name}</div>`;
+    uploadPlaceholder.classList.add('fade-in');
+    
+    // Habilitar botón de encriptar
+    encryptBtnCompact.style.opacity = '1';
+    encryptBtnCompact.style.cursor = 'pointer';
+}
+
+// Event listener para botón encriptar
+encryptBtnCompact.addEventListener('click', () => {
+    if (!selectedFile) {
+        alert('Por favor, selecciona un archivo primero');
+        return;
+    }
+    
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const content = e.target.result;
+        encryptedContent = encriptarMensaje(content);
+        
+        // Mostrar botón de descarga
+        downloadBtnCompact.classList.add('active');
+        uploadPlaceholder.innerHTML = `<div class="file-selected">✅ ${selectedFile.name} encriptado</div>`;
+    };
+    reader.readAsText(selectedFile);
+});
+
+// Event listener para botón descargar
+downloadBtnCompact.addEventListener('click', () => {
+    if (!encryptedContent) return;
+    
+    const blob = new Blob([encryptedContent], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'encrypted_' + selectedFile.name;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+});
+
+// Event listener para botón limpiar
+clearBtnCompact.addEventListener('click', () => {
+    selectedFile = null;
+    encryptedContent = null;
+    fileInputCompact.value = '';
+    uploadPlaceholder.innerHTML = 'Arrastra o haz clic aquí';
+    uploadPlaceholder.classList.remove('fade-in');
+    downloadBtnCompact.classList.remove('active');
+    encryptBtnCompact.style.opacity = '0.7';
+    encryptBtnCompact.style.cursor = 'default';
+});
+
+function encriptarMensaje(texto) {
+    let textoEncriptado = "";
+    for(let letra of texto){
+        const {letraEncriptada, caminoEncriptacion} = enigma.encriptarLetra(letra);
+        textoEncriptado += letraEncriptada;
+    }
+    mostrarConfigActual();
+    return textoEncriptado;
+}
+
+// Inicialización
+encryptBtnCompact.style.opacity = '0.7';
+encryptBtnCompact.style.cursor = 'default';
+
 // Redibujar al redimensionar la ventana
 window.addEventListener("resize", () => {
     borrarSVGs();
@@ -574,3 +691,5 @@ window.addEventListener("scroll", () => {
     }
 });
 
+document.getElementById("reajustar1").click();
+document.getElementById("reajustar2").click();

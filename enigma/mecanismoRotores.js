@@ -34,7 +34,6 @@ export default class Rotores {
     }
 
     encriptarLetra(letra){
-        if(letra == " ") return letra;
 
         const rotarIzq = this.rotorCentral.enNotchLetraActual();
         const rotarCentral = this.rotorDer.enNotchLetraActual();
