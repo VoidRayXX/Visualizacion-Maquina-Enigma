@@ -4,17 +4,28 @@ import Enigma from "./enigma/enigma.js";
 
 const abecedario = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-let rotorIzq = new Rotor("I", "a", "a");
-let rotorCentral = new Rotor("II", "a", "a");
-let rotorDer = new Rotor("III", "a", "a");
+//Rotor - Pos Inicial - Offset (Ring Setting)
+let rotorIzq = new Rotor("I", "A", "A");
+let rotorCentral = new Rotor("II", "A", "A");
+let rotorDer = new Rotor("III", "A", "A");
 
+//rotores - reflector a usar
 let rotores = new Rotores(rotorIzq, rotorCentral, rotorDer, "B");
 
 let enigma = new Enigma(rotores);
-// enigma.conectarLetras("B", "H");
 
 const letrasEncriptadas = [];
 const letrasOriginales = [];
+
+const rotorSettings = ["A", "A", "A"];
+const ringSettings = ["A", "A", "A"];
+let modoRings = false;
+
+const diccPosiciones = new Map([
+    ["letraIzq", 0],
+    ["letraCen", 1],
+    ["letraDer", 2],
+]);
 
 const configuraciones = new Map([
     ["I", ["EKMFLGDQVZNTOWYHXUSPAIBRCJ", "Q"]],
@@ -22,46 +33,38 @@ const configuraciones = new Map([
     ["III", ["BDFHJLCPRTXVZNYEIWGAKMUSQO", "V"]],
     ["IV", ["ESOVPZJAYQUIRHXLNFTGKDCMWB", "J"]],
     ["V", ["VZBRGITYUPSDNHLXAWMJQOFECK", "Z"]],
-    ["A", ["EJMZALYXVBWFCRQUONTSPIKHGD", null]],
     ["B", ["YRUHQSLDPXNGOKMIEBFZCWVJAT", null]],
     ["C", ["FVPJIAOYEDRZXWGCTKUQSBNMHL", null]],
     ["plugboard", [abecedario, null]]
 ]);
 
-
-function dividirEnBloques(texto, tamaño = 5) {
-    const textoSinEspacios = texto.replace(/ /g, "");
-    const bloques = [];
-
-    for (let i = 0; i < textoSinEspacios.length; i += tamaño) {
-        bloques.push(textoSinEspacios.slice(i, i + tamaño));
-    }
-
-    return bloques.join(" ");
+function indicarPosRotor(id){
+    const posRotor = diccPosiciones.get(id);
+    return posRotor;
 }
 
 
 function dibujarFlecha(origenId, destinoId, svgID, sentido) {
     const svg = document.getElementById(svgID);
-    svg.innerHTML = ""; // limpiar antes de dibujar otra
+    svg.innerHTML = ""; //limpiar antes de dibujar otra
 
     const origen = document.getElementById(origenId).getBoundingClientRect();
     const destino = document.getElementById(destinoId).getBoundingClientRect();
 
-    // Coordenadas relativas al viewport (sin scroll)
+    //Coordenadas relativas al viewport
     const startY = origen.top + origen.height / 2;
     const endY = destino.top + destino.height / 2;
 
     let startX, endX;
     if(sentido === "ida"){
-        startX = origen.left;
-        endX = destino.right;
+        startX = origen.left; 
+        endX = destino.right; 
     } else {
         startX = origen.right;
-        endX = destino.left;
+        endX = destino.left;  
     }
 
-    // Tamaño del viewport
+    //Tamaño del viewport
     svg.setAttribute("width", window.innerWidth);
     svg.setAttribute("height", window.innerHeight);
 
@@ -69,11 +72,11 @@ function dibujarFlecha(origenId, destinoId, svgID, sentido) {
 
     let color; 
     if(id < 9){
-        color = "red";
+        color = "#FF4444";        
     } else if(id < 11){
-        color = "green";
+        color = "#44FF88";        
     } else {
-        color = "blue";
+        color = "#4488FF";        
     }
 
     const defs = `
@@ -96,12 +99,30 @@ let ultimoCamino = null;
 function manejarTecla(letra){
     const {letraEncriptada, caminoEncriptacion} = enigma.encriptarLetra(letra);
     ultimoCamino = caminoEncriptacion;
+    actualizarRotoresVisuales();
+    mostrarConfigActual();
+
     trazarCamino(caminoEncriptacion);
     agregarLetraASentencia(letraEncriptada, "textoEncriptado", false);
     agregarLetraASentencia(letra, "textoOriginal", true);
-    mostrarConfigActual();
-    // enigma.printConfig();
-    actualizarRotoresVisuales();
+}
+
+function mostrarConfigActual(){
+    const {letraIzq, letraCen, letraDer} = enigma.mostrarConfigActual();
+
+    rotorSettings[0] = letraIzq;
+    rotorSettings[1] = letraCen;
+    rotorSettings[2] = letraDer;
+
+    if(!modoRings){
+        const rotorIzq = document.getElementById("letraIzq");
+        const rotorCen = document.getElementById("letraCen");
+        const rotorDer = document.getElementById("letraDer");
+
+        rotorDer.textContent = letraDer;
+        rotorCen.textContent = letraCen;
+        rotorIzq.textContent = letraIzq;
+    }   
 }
 
 function actualizarRotoresVisuales(){
@@ -110,68 +131,124 @@ function actualizarRotoresVisuales(){
     actualizarRotorVisual("rotorIzq", enigma.rotores.rotorIzq);
 }
 
+function actualizarRotorVisual(rotorID, rotorObj) {
+    const rotorDiv = document.getElementById(rotorID);
+    const columnas = rotorDiv.querySelectorAll("div");
+
+    const columnaIzq = columnas[0].querySelectorAll("span");
+    const columnaDer = columnas[1].querySelectorAll("span");
+
+    const abecedarioRotado = 
+        abecedario.slice(rotorObj.posInicial) + abecedario.slice(0, rotorObj.posInicial);
+
+    const mapeo = rotorObj.rotor.map(pair => pair[1]).join("");
+    const mapeoRotado = 
+        mapeo.slice(rotorObj.posInicial) + mapeo.slice(0, rotorObj.posInicial);
+
+    //reasignar letras en la columna izquierda
+    for (let i = 0; i < 26; i++) {
+        columnaIzq[i].textContent = abecedarioRotado[i];
+    }
+
+    //reasignar letras en la columna derecha
+    for (let i = 0; i < 26; i++) {
+        columnaDer[i].textContent = mapeoRotado[i];
+    }
+}
+
+function dividirEnBloques(texto, tamaño = 5) {
+    const textoSinEspacios = texto.replace(/ /g, "");
+    const bloques = [];
+
+    for (let i = 0; i < textoSinEspacios.length; i += tamaño) {
+        bloques.push(textoSinEspacios.slice(i, i + tamaño));
+    }
+
+    return bloques.join(" ");
+}
+
 function agregarLetraASentencia(letra, divID, original) {
     const textoSentencia = document.getElementById(divID);
     let texto;
-    if(original){
+
+    if (original) {
         letrasOriginales.push(letra);
-        texto = letrasOriginales.join(" ");
-    }
-    else {
+        texto = letrasOriginales.join("");
+    } else {
         letrasEncriptadas.push(letra);
-        texto = letrasEncriptadas.join(" ");
+        texto = letrasEncriptadas.join("");
     }
 
-    textoSentencia.innerHTML = texto + ' <span class="cursor-parpadeante">&nbsp;_</span>';
+    const textoEnBloques = dividirEnBloques(texto);
+    textoSentencia.innerHTML = textoEnBloques + ' <span class="cursor-parpadeante">&nbsp;_</span>';
+}
+
+function obtenerIndiceLetraRotor(letra, nombreRotor = "" , columna = null){
+    nombreRotor = nombreRotor.split("-")[0];
+    let rotor;
+    if(nombreRotor === "rotorDer") rotor = enigma.rotores.rotorDer;
+    else if(nombreRotor === "rotorCentral") rotor = enigma.rotores.rotorCentral;
+    else if(nombreRotor === "rotorIzq") rotor = enigma.rotores.rotorIzq;
+    else if(nombreRotor === "reflector") return enigma.rotores.reflector.indexOf(letra);
+    else return abecedario.indexOf(letra);
+
+    return rotor.buscarIndiceLetra(columna, letra);
 }
 
 
-function trazarCamino(caminoEncriptacion){
+function trazarCamino(caminoEncriptacion) {
     const camino = [
-        "plugboard-der-",
-        "plugboard-izq-",
-        "rotorDer-der-",
-        "rotorDer-izq-",
-        "rotorCentral-der-",
-        "rotorCentral-izq-",
-        "rotorIzq-der-",
-        "rotorIzq-izq-",
-        "reflector-der-",
-        "reflector-izq-",
-        "reflector-der-",
-        "rotorIzq-izq-",
-        "rotorIzq-der-",
-        "rotorCentral-izq-",
-        "rotorCentral-der-",
-        "rotorDer-izq-",
-        "rotorDer-der-",
-        "plugboard-izq-",
-        "plugboard-der-",
+        "plugboard-der",
+        "plugboard-izq",
+        "rotorDer-der",
+        "rotorDer-izq",
+        "rotorCentral-der",
+        "rotorCentral-izq",
+        "rotorIzq-der",
+        "rotorIzq-izq",
+        "reflector-der",
+        "reflector-izq",
+        "reflector-der",
+        "rotorIzq-izq",
+        "rotorIzq-der",
+        "rotorCentral-izq",
+        "rotorCentral-der",
+        "rotorDer-izq",
+        "rotorDer-der",
+        "plugboard-izq",
+        "plugboard-der",
     ];
 
     let sentido = "ida";
     const inputUsuario = caminoEncriptacion[0][0];
-    const origenInicial = "teclado-" + inputUsuario;
-    const destinoInicial = "plugboard-der-" + inputUsuario;
+    const origenInicial = "teclado-" + obtenerIndiceLetraRotor(inputUsuario);
+    const destinoInicial = "plugboard-der-" + obtenerIndiceLetraRotor(inputUsuario);
     const idFlechaInicial = "flecha0";
     dibujarFlecha(origenInicial, destinoInicial, idFlechaInicial, sentido);
 
-    for(let i = 0; i < caminoEncriptacion.length - 1; i++){
+    for (let i = 0; i < caminoEncriptacion.length - 1; i++) {
         let columnaOrigen = 1;
         let columnaDestino = 0;
 
-        if(i % 2 != 0){
+        if (i % 2 != 0) {
             columnaOrigen = 0;
             columnaDestino = 1;
-        };
+        }
 
-        const origen = camino[i] + caminoEncriptacion[i][columnaOrigen];
-        const destino = camino[i+1] + caminoEncriptacion[i+1][columnaDestino];
+        //obtener letras del camino
+        const letraOrigen = caminoEncriptacion[i][columnaOrigen];
+        const letraDestino = caminoEncriptacion[i + 1][columnaDestino];
+
+        //convertir letras a índices basados en la posición fija del elemento
+        const indiceOrigen = obtenerIndiceLetraRotor(letraOrigen, camino[i], columnaOrigen);
+        const indiceDestino = obtenerIndiceLetraRotor(letraDestino, camino[i+1], columnaDestino);
+
+        //usar índices para construir los IDs
+        const origen = camino[i] + "-" + indiceOrigen;
+        const destino = camino[i + 1] + "-" + indiceDestino;
         const idFlecha = "flecha" + (i + 1).toString();
-        // console.log(idFlecha);
-        // console.log(origen,"->", destino);
 
-        if(i > 8){
+        if (i > 8) {
             sentido = "vuelta";
         }
 
@@ -179,15 +256,14 @@ function trazarCamino(caminoEncriptacion){
     }
 
     const letraEncriptada = caminoEncriptacion[caminoEncriptacion.length - 1][0];
-    const origenFinal = "plugboard-der-" + letraEncriptada;
-    const destinoFinal = "teclado-" + letraEncriptada;
+    const origenFinal = "plugboard-der-" + obtenerIndiceLetraRotor(letraEncriptada);
+    const destinoFinal = "teclado-" + obtenerIndiceLetraRotor(letraEncriptada);
     const idFlechaFinal = "flecha19";
     dibujarFlecha(origenFinal, destinoFinal, idFlechaFinal, sentido);
-
 }
 
 function borrarSVGs(){
-    //Limpia todos los SVGs
+    //limpia todos los SVGs
     for (let i = 0; i < 20; i++) {
         const svg = document.getElementById("flecha" + i);
         if (svg) svg.innerHTML = "";
@@ -210,29 +286,19 @@ function reiniciarPag(){
     borrarSentencias();
 }
 
-function mostrarConfigActual(){
-    const {letraIzq, letraCen, letraDer} = enigma.mostrarConfigActual();
-    const rotorIzq = document.getElementById("letraIzq");
-    const rotorCen = document.getElementById("letraCen");
-    const rotorDer = document.getElementById("letraDer");
-
-    rotorDer.textContent = letraDer;
-    rotorCen.textContent = letraCen;
-    rotorIzq.textContent = letraIzq;
-}
 
 function cambiarConfigEnigma(){
-    const letraIzq = document.getElementById("letraIzq").textContent;
-    const letraCen = document.getElementById("letraCen").textContent;
-    const letraDer = document.getElementById("letraDer").textContent;
+    const letraIzq = rotorSettings[0];
+    const letraCen = rotorSettings[1];
+    const letraDer = rotorSettings[2];
 
     const selects = document.querySelectorAll(".rotor-group select");
     let [reflector, rotorIzq, rotorCentral, rotorDer] = Array.from(selects).map(sel => sel.value);
     
-    //variables globales
-    rotorIzq = new Rotor(rotorIzq, letraIzq, "a");
-    rotorCentral = new Rotor(rotorCentral, letraCen, "a");
-    rotorDer = new Rotor(rotorDer, letraDer, "a");
+    //llamar a variables globales
+    rotorIzq = new Rotor(rotorIzq, letraIzq, ringSettings[0]);
+    rotorCentral = new Rotor(rotorCentral, letraCen, ringSettings[1]);
+    rotorDer = new Rotor(rotorDer, letraDer, ringSettings[2]);
 
     rotores = new Rotores(rotorIzq, rotorCentral, rotorDer, reflector);
     enigma = new Enigma(rotores);
@@ -243,6 +309,7 @@ function actualizarConfig(event){
     const direccion = boton.textContent;
     const rotor = boton.closest('.rotor-enigma');
     const ventana = rotor.querySelector('.window');
+    const idVentana = ventana.id;
 
     const letraActual = ventana.textContent;
     let posLetra = letraActual.charCodeAt() - 65;
@@ -252,44 +319,27 @@ function actualizarConfig(event){
     posLetra = (posLetra + 26) % 26;
     const nuevaLetra = abecedario[posLetra];
     ventana.textContent = nuevaLetra;
+
+    const posRotor = indicarPosRotor(idVentana);
+
+    //aquí cambia según el modo, ring settings o rotor settigs
+    if (modoRings) ringSettings[posRotor] = nuevaLetra;
+    else rotorSettings[posRotor] = nuevaLetra;
+    
     cambiarConfigEnigma();
     reiniciarPag();
-
     actualizarRotoresVisuales();
-
+    
 }
 
-function actualizarRotorVisual(rotorID, rotorObj) {
-    const rotorDiv = document.getElementById(rotorID);
-    const columnas = rotorDiv.querySelectorAll("div");
-
-    const columnaIzq = columnas[0].querySelectorAll("span");
-    const columnaDer = columnas[1].querySelectorAll("span");
-
-    const abecedarioRotado = 
-        abecedario.slice(rotorObj.posInicial) + abecedario.slice(0, rotorObj.posInicial);
-
-    const mapeo = rotorObj.rotor.map(pair => pair[1]).join("");
-    const mapeoRotado = 
-        mapeo.slice(rotorObj.posInicial) + mapeo.slice(0, rotorObj.posInicial);
-
-    // reasignar letras en la columna izquierda
-    for (let i = 0; i < 26; i++) {
-        columnaIzq[i].textContent = abecedarioRotado[i];
-    }
-
-    // reasignar letras en la columna derecha
-    for (let i = 0; i < 26; i++) {
-        columnaDer[i].textContent = mapeoRotado[i];
-    }
-}
 
 
 function crearColumna(columna, secuencia, textoID, esTeclado = false){
+    let numFilas = 0;
     for(let letra of secuencia){
         const span = document.createElement("span");
         span.textContent = letra;
-        span.id = textoID + letra;
+        span.id = textoID + String(numFilas);
 
         if(esTeclado){
             span.classList.add("tecla");
@@ -297,7 +347,9 @@ function crearColumna(columna, secuencia, textoID, esTeclado = false){
                 manejarTecla(letra);
             });
         }
+        
         columna.append(span);
+        numFilas++;
     }
 }
 
@@ -308,22 +360,13 @@ function crearRotor(posRotor, nombreRotor){
     const columnaIzq = rotor.querySelectorAll("div")[0];
     const columnaDer = rotor.querySelectorAll("div")[1];
 
-    // Aplica animación de giro
-    columnaIzq.classList.add("rotor-columna", "girar");
-    columnaDer.classList.add("rotor-columna", "girar");
-
     columnaIzq.innerHTML = "";
     columnaDer.innerHTML = "";
 
     const [secuencia, notch] = configuraciones.get(nombreRotor);
 
-    // Crea nuevo contenido
     crearColumna(columnaIzq, abecedario, posRotor+"-izq-");
     crearColumna(columnaDer, secuencia, posRotor+"-der-");
-
-    // Quita animación para mostrar nuevo contenido
-    columnaIzq.classList.remove("girar");
-    columnaDer.classList.remove("girar");
 }
 
 
@@ -352,39 +395,298 @@ document.querySelectorAll('.rotor-enigma button').forEach(boton => {
 
 const selects = document.querySelectorAll(".rotor-group select");
 
-// Recorre cada uno y le agrega un listener
+//Le agrega un listener a cada selector de rotor settings
 selects.forEach(sel => {
-  sel.addEventListener("change", (e) => {
-    const grupo = e.target.closest(".rotor-group");
-    const reflector = grupo?.dataset.reflector;
+    sel.addEventListener("change", (e) => {
+        const grupo = e.target.closest(".rotor-group");
+        const reflector = grupo?.dataset.reflector;
 
-    const nombreReflector = e.target.value;
+        const nombreReflector = e.target.value;
 
-    reiniciarPag();
+        reiniciarPag();
 
-    if(reflector)  crearRotor("reflector", nombreReflector);
+        if(reflector)  crearRotor("reflector", nombreReflector);
 
-    cambiarConfigEnigma();
+        cambiarConfigEnigma();
 
-    actualizarRotoresVisuales();
-  });
+        actualizarRotoresVisuales();
+    });
 });
 
+function mostrarRingSettings() {
+    const letraIzq = document.getElementById("letraIzq");
+    const letraCen = document.getElementById("letraCen");
+    const letraDer = document.getElementById("letraDer");
+
+    letraIzq.textContent = ringSettings[0];
+    letraCen.textContent = ringSettings[1];
+    letraDer.textContent = ringSettings[2];
+}
+
+
+
+const botonRingSettings = document.querySelector('.ring-settings');
+botonRingSettings.addEventListener('click', () => {
+    modoRings = !modoRings;
+    if (modoRings) {
+        botonRingSettings.textContent = "< Rotor Settings";
+        const titulo = document.querySelector(".rotors-title");
+        titulo.textContent = "Ring Settings (Ringstellung)";
+        selects.forEach(sel => sel.classList.add("desactivado"));
+        mostrarRingSettings();
+
+    } else {
+        botonRingSettings.textContent = "Ring Settings >";
+        const titulo = document.querySelector(".rotors-title");
+        titulo.textContent = "Rotor Settings (Walzenlage)";
+        selects.forEach(sel => sel.classList.remove("desactivado"));
+        mostrarConfigActual(); //vuelve a mostrar las posiciones normales
+    }
+});
+
+
+
+//esto es para input manual de configuraciones
 document.querySelectorAll(".rotor-enigma .window").forEach(win => {
   win.addEventListener("input", () => {
     let val = win.textContent.toUpperCase().replace(/[^A-Z]/g, "");
-    win.textContent = val.slice(-1) || "A"; // siempre 1 letra
+    const contenido = val.slice(-1) || "A"; //muestre el valor válido (sólo 1 letra), y si no hay, "A"
+    win.textContent = contenido;
+    const idVentana = win.id;
+    const posRotor = indicarPosRotor(idVentana);
+
+    if (modoRings) ringSettings[posRotor] = contenido;
+    else rotorSettings[posRotor] = contenido;
+
     cambiarConfigEnigma();
     reiniciarPag();
     actualizarRotoresVisuales();
   });
 });
 
-// Redibujar al redimensionar la ventana
+
+
+const coloresPlugboard = [
+  "#FF1744",  
+  "#2509022a",  
+  "#035394d0",   
+  "#FF9100",  
+  "#210457ff",  
+  "#00BCD4",  
+  "#c4b109a6",  
+  "#9C27B0",  
+  "#FF5722",  
+  "#4CAF50"   
+];
+
+
+function cambiarColorBotones(letra1, letra2){
+    const boton1 = [...document.querySelectorAll(".plugboard-button")]
+    .find(btn => btn.textContent.trim() === letra1);
+    const boton2 = [...document.querySelectorAll(".plugboard-button")]
+    .find(btn => btn.textContent.trim() === letra2);
+
+    //Asignar color desde la lista
+    const color = coloresPlugboard[colorIndex % coloresPlugboard.length];
+    boton1.style.backgroundColor = color;
+    boton2.style.backgroundColor = color;
+}
+
+function eliminarConex(letra1){
+    const letra2 = enigma.plugboard.obtenerLetra(letra1);
+
+    const boton1 = [...document.querySelectorAll(".plugboard-button")]
+    .find(btn => btn.textContent.trim() === letra1);
+    const boton2 = [...document.querySelectorAll(".plugboard-button")]
+    .find(btn => btn.textContent.trim() === letra2);
+
+    boton1.classList.remove("seleccionado");
+    boton1.style.backgroundColor = "";
+    boton2.classList.remove("seleccionado");
+    boton2.style.backgroundColor = "";
+
+    enigma.plugboard.eliminarConex(letra1);
+}
+
+let seleccionados = [];
+let colorIndex = 0;
+let numConexiones = 0;
+
+document.querySelectorAll(".plugboard-button").forEach((boton) => {
+  boton.addEventListener("click", () => {
+    let letra;
+    letra = boton.textContent.trim();
+
+    if(boton.classList.contains("seleccionado")){
+        seleccionados = [];
+        eliminarConex(letra);
+        numConexiones--;
+        reiniciarPag();
+        return;
+    }
+
+    if(numConexiones < 10){
+        seleccionados.push(letra);
+        boton.classList.add("seleccionado");
+    }
+
+    if(seleccionados.length === 2 && numConexiones < 10) {
+        const [letra1, letra2] = seleccionados;
+        enigma.conectarLetras(letra1, letra2);
+
+        cambiarColorBotones(letra1, letra2);
+        colorIndex++;
+       
+        seleccionados = [];
+        numConexiones++;
+        reiniciarPag();
+    }
+  });
+});
+
+let selectedFile = null;
+let encryptedContent = null;
+
+//Referencias DOM sección Upload File
+const uploadAreaCompact = document.getElementById('uploadAreaCompact');
+const fileInputCompact = document.getElementById('fileInputCompact');
+const uploadPlaceholder = document.getElementById('uploadPlaceholder');
+const encryptBtnCompact = document.getElementById('encryptBtnCompact');
+const downloadBtnCompact = document.getElementById('downloadBtnCompact');
+const clearBtnCompact = document.getElementById('clearBtnCompact');
+
+//Event listeners para drag & drop
+uploadAreaCompact.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    uploadAreaCompact.classList.add('dragover');
+});
+
+uploadAreaCompact.addEventListener('dragleave', (e) => {
+    e.preventDefault();
+    uploadAreaCompact.classList.remove('dragover');
+});
+
+uploadAreaCompact.addEventListener('drop', (e) => {
+    e.preventDefault();
+    uploadAreaCompact.classList.remove('dragover');
+    
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+        handleFileSelect(files[0]);
+    }
+});
+
+//Event listener para click en área de carga
+uploadAreaCompact.addEventListener('click', () => {
+    fileInputCompact.click();
+});
+
+//Event listener para selección de archivo
+fileInputCompact.addEventListener('change', (e) => {
+    if (e.target.files.length > 0) {
+        handleFileSelect(e.target.files[0]);
+    }
+});
+
+//Función para manejar selección de archivo
+function handleFileSelect(file) {
+    if (!file.name.toLowerCase().endsWith('.txt')) {
+        alert('Please select only .txt files');
+        return;
+    }
+    
+    selectedFile = file;
+    uploadPlaceholder.innerHTML = `<div class="file-selected">${file.name}</div>`;
+    uploadPlaceholder.classList.add('fade-in');
+    
+    //Habilitar botón de encriptar
+    encryptBtnCompact.style.opacity = '1';
+    encryptBtnCompact.style.cursor = 'pointer';
+}
+
+//Event listener para botón encriptar
+encryptBtnCompact.addEventListener('click', () => {
+    if (!selectedFile) {
+        alert('Please select a file first');
+        return;
+    }
+    
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const content = e.target.result;
+        encryptedContent = encriptarMensaje(content);
+        
+        //Mostrar botón de descarga
+        downloadBtnCompact.classList.add('active');
+        uploadPlaceholder.innerHTML = `<div class="file-selected">✅ ${selectedFile.name} encrypted</div>`;
+    };
+    reader.readAsText(selectedFile);
+});
+
+//Event listener para botón descargar
+downloadBtnCompact.addEventListener('click', () => {
+    if (!encryptedContent) return;
+    
+    const blob = new Blob([encryptedContent], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'encrypted_' + selectedFile.name;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+});
+
+//Event listener para botón limpiar
+clearBtnCompact.addEventListener('click', () => {
+    selectedFile = null;
+    encryptedContent = null;
+    fileInputCompact.value = '';
+    uploadPlaceholder.innerHTML = 'Drag or click here';
+    uploadPlaceholder.classList.remove('fade-in');
+    downloadBtnCompact.classList.remove('active');
+    encryptBtnCompact.style.opacity = '0.7';
+    encryptBtnCompact.style.cursor = 'default';
+});
+
+function encriptarMensaje(texto) {
+    let textoEncriptado = "";
+    for(let letra of texto){
+        const {letraEncriptada, caminoEncriptacion} = enigma.encriptarLetra(letra);
+        textoEncriptado += letraEncriptada;
+    }
+    mostrarConfigActual();
+    return textoEncriptado;
+}
+
+//Inicialización
+encryptBtnCompact.style.opacity = '0.7';
+encryptBtnCompact.style.cursor = 'default';
+
+//Manejador de teclado físico
+document.addEventListener('keydown', function(event) {
+    //Verificar si la tecla es una letra (A-Z, a-z)
+    const key = event.key.toUpperCase();
+    if (key.length === 1 && key >= 'A' && key <= 'Z') {
+        //Verificar si el elemento activo es editable o es un input/textarea
+        const activeElement = document.activeElement;
+        const isContentEditable = activeElement.isContentEditable;
+        const isInput = activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA';
+        
+        //Si no es editable ni input, entonces procesar la tecla
+        if (!isContentEditable && !isInput) {
+            event.preventDefault();
+            manejarTecla(key);
+        }
+    }
+});
+
+//Redibujar al redimensionar la ventana
 window.addEventListener("resize", () => {
     borrarSVGs();
 
-    // vuelve a trazar el camino de la última letra presionada
+    //vuelve a trazar el camino de la última letra presionada
     if (ultimoCamino) {
         trazarCamino(ultimoCamino);
     }
@@ -393,9 +695,12 @@ window.addEventListener("resize", () => {
 window.addEventListener("scroll", () => {
     borrarSVGs();
     
-    // Redibujar el camino si existe
+    //Redibujar el camino si existe
     if (ultimoCamino) {
         trazarCamino(ultimoCamino);
     }
 });
 
+//por alguna razón, la caja de secuencias no sale del tamaño correcto al inicio, y es empujada por otros elementos, esto lo soluciona sin alterar nada
+document.getElementById("reajustar1").click();
+document.getElementById("reajustar2").click();

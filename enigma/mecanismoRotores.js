@@ -31,11 +31,9 @@ export default class Rotores {
         console.log("Rotor Izquierdo " + this.rotorIzq.getInfo());
         console.log("Rotor Central " + this.rotorCentral.getInfo());
         console.log("Rotor Derecho " + this.rotorDer.getInfo());
-        console.log("***********************");
     }
 
     encriptarLetra(letra){
-        if(letra == " ") return letra;
 
         const rotarIzq = this.rotorCentral.enNotchLetraActual();
         const rotarCentral = this.rotorDer.enNotchLetraActual();
@@ -74,10 +72,6 @@ export default class Rotores {
         caminoEncriptacion.push([letraIngRefl, letraIngRefl]);
         caminoEncriptacion.push([letraIngRefl, letraIngRefl]);
         caminoEncriptacion.push([letraReflejada, letraReflejada]);
-
-        // console.log([letraIngRefl, letraIngRefl]);
-        // console.log([letraIngRefl, letraIngRefl]);
-        // console.log([letraReflejada, letraReflejada]);
 
         const posicionLetra = letraIngRefl.charCodeAt() - 65;
 
