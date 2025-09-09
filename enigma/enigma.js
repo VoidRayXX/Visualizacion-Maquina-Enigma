@@ -6,11 +6,12 @@ export default class Enigma {
         this.plugboard = new Plugboard();
     }
 
+    //se hará un swap entre dos letras en el plugboard, A<->H
     conectarLetras(letra1, letra2){
         this.plugboard.conectarLetras(letra1, letra2);
-        // console.log(`Conectado: ${letra1} ↔ ${letra2}`);
     }
 
+    //encripta una letra, primero viendo sus conexiones en el plugboard, y luego pasando a los rotores y el reflector, para luego volver a ver el plugboard
     encriptarLetra(letra){
         if(!letra.match(/[a-zA-Z]/)) return{
             letraEncriptada: letra,
@@ -32,20 +33,6 @@ export default class Enigma {
             caminoEncriptacion: caminoEncriptacion
         };
     }
-
-    // encriptarMensaje(mensaje){
-    //     let mensajeEncriptado = "";
-    //     for(let letra of mensaje){
-    //         const letraPgb = this.plugboard.obtenerLetra(letra);
-    //         const {letraRotores, caminoEncriptacion} = this.rotores.encriptarLetra(letraPgb);
-    //         const letraEncriptada = this.plugboard.obtenerLetra(letraRotores);
-    //         mensajeEncriptado += letraEncriptada;
-    //     }
-    //     return {
-    //         letraEncriptada: mensajeEncriptado,
-    //         caminoEncriptacion: caminoEncriptacion
-    //     };
-    // }
 
     mostrarConfigActual(){
         return this.rotores.mostrarConfigActual();

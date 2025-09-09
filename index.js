@@ -4,10 +4,12 @@ import Enigma from "./enigma/enigma.js";
 
 const abecedario = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
+//Rotor - Pos Inicial - Offset (Ring Setting)
 let rotorIzq = new Rotor("I", "A", "A");
 let rotorCentral = new Rotor("II", "A", "A");
 let rotorDer = new Rotor("III", "A", "A");
 
+//rotores - reflector a usar
 let rotores = new Rotores(rotorIzq, rotorCentral, rotorDer, "B");
 
 let enigma = new Enigma(rotores);
@@ -358,10 +360,6 @@ function crearRotor(posRotor, nombreRotor){
     const columnaIzq = rotor.querySelectorAll("div")[0];
     const columnaDer = rotor.querySelectorAll("div")[1];
 
-    // Aplica animación de giro
-    columnaIzq.classList.add("rotor-columna", "girar");
-    columnaDer.classList.add("rotor-columna", "girar");
-
     columnaIzq.innerHTML = "";
     columnaDer.innerHTML = "";
 
@@ -469,16 +467,16 @@ document.querySelectorAll(".rotor-enigma .window").forEach(win => {
 
 
 const coloresPlugboard = [
-  "#FF1744",  // Rojo vibrante
-  "#00E676",  // Verde lima
-  "#2196F3",  // Azul brillante  
-  "#FF9100",  // Naranja intenso
-  "#E91E63",  // Rosa fucsia
-  "#00BCD4",  // Cian
-  "#FFEB3B",  // Amarillo brillante
-  "#9C27B0",  // Púrpura
-  "#FF5722",  // Naranja rojizo
-  "#4CAF50"   // Verde intenso
+  "#FF1744",  
+  "#2509022a",  
+  "#035394d0",   
+  "#FF9100",  
+  "#210457ff",  
+  "#00BCD4",  
+  "#c4b109a6",  
+  "#9C27B0",  
+  "#FF5722",  
+  "#4CAF50"   
 ];
 
 
@@ -517,27 +515,22 @@ let numConexiones = 0;
 document.querySelectorAll(".plugboard-button").forEach((boton) => {
   boton.addEventListener("click", () => {
     let letra;
-    if(numConexiones < 10) letra = boton.textContent.trim();
-    else return;
+    letra = boton.textContent.trim();
 
     if(boton.classList.contains("seleccionado")){
+        seleccionados = [];
         eliminarConex(letra);
         numConexiones--;
         reiniciarPag();
         return;
     }
 
-    if(seleccionados.includes(letra)) {
-        seleccionados = [];
-        boton.classList.remove("seleccionado");
-        boton.style.backgroundColor = "";
-        return;
+    if(numConexiones < 10){
+        seleccionados.push(letra);
+        boton.classList.add("seleccionado");
     }
 
-    seleccionados.push(letra);
-    boton.classList.add("seleccionado");
-
-    if(seleccionados.length === 2 && numConexiones < 11) {
+    if(seleccionados.length === 2 && numConexiones < 10) {
         const [letra1, letra2] = seleccionados;
         enigma.conectarLetras(letra1, letra2);
 
@@ -625,7 +618,7 @@ encryptBtnCompact.addEventListener('click', () => {
         
         //Mostrar botón de descarga
         downloadBtnCompact.classList.add('active');
-        uploadPlaceholder.innerHTML = `<div class="file-selected">✅ ${selectedFile.name} encriptado</div>`;
+        uploadPlaceholder.innerHTML = `<div class="file-selected">✅ ${selectedFile.name} encrypted</div>`;
     };
     reader.readAsText(selectedFile);
 });
@@ -671,6 +664,24 @@ function encriptarMensaje(texto) {
 encryptBtnCompact.style.opacity = '0.7';
 encryptBtnCompact.style.cursor = 'default';
 
+//Manejador de teclado físico
+document.addEventListener('keydown', function(event) {
+    //Verificar si la tecla es una letra (A-Z, a-z)
+    const key = event.key.toUpperCase();
+    if (key.length === 1 && key >= 'A' && key <= 'Z') {
+        //Verificar si el elemento activo es editable o es un input/textarea
+        const activeElement = document.activeElement;
+        const isContentEditable = activeElement.isContentEditable;
+        const isInput = activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA';
+        
+        //Si no es editable ni input, entonces procesar la tecla
+        if (!isContentEditable && !isInput) {
+            event.preventDefault();
+            manejarTecla(key);
+        }
+    }
+});
+
 //Redibujar al redimensionar la ventana
 window.addEventListener("resize", () => {
     borrarSVGs();
@@ -690,5 +701,6 @@ window.addEventListener("scroll", () => {
     }
 });
 
+//por alguna razón, la caja de secuencias no sale del tamaño correcto al inicio, y es empujada por otros elementos, esto lo soluciona sin alterar nada
 document.getElementById("reajustar1").click();
 document.getElementById("reajustar2").click();

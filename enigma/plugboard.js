@@ -10,7 +10,7 @@ export default class Plugboard {
             this.plugboard.delete(letra);
         }
     }
-
+    //se eliminan las conexiones previas que tengan las letras, y se relaciona una con la otra en un diccionario
     conectarLetras(letra1, letra2){
         letra1 = letra1.toUpperCase();
         letra2 = letra2.toUpperCase();
@@ -22,6 +22,7 @@ export default class Plugboard {
         this.plugboard.set(letra2, letra1);
     }
 
+    //retorna la letra asociada a la buscada. si no tiene asociada, se retorna a sí misma
     obtenerLetra(letra){
         letra = letra.toUpperCase();
         if(!this.plugboard.has(letra)){

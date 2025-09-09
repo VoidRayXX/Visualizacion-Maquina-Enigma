@@ -671,11 +671,6 @@ select:focus {
   border: 1px solid #30363d;
 }
 
-.sentencias-container::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, #64ff96 0%, #48bb78 100%);
-  box-shadow: 0 0 8px rgba(100, 255, 150, 0.3);
-}
-
 /* === RESPONSIVE === */
 @media (max-width: 1200px) {
   body {

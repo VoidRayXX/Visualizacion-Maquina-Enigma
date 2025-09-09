@@ -73,10 +73,6 @@ export default class Rotores {
         caminoEncriptacion.push([letraIngRefl, letraIngRefl]);
         caminoEncriptacion.push([letraReflejada, letraReflejada]);
 
-        // console.log([letraIngRefl, letraIngRefl]);
-        // console.log([letraIngRefl, letraIngRefl]);
-        // console.log([letraReflejada, letraReflejada]);
-
         const posicionLetra = letraIngRefl.charCodeAt() - 65;
 
         entradaRotorIzq = this.rotorIzq.getLetrasAsociadas(posicionLetra);
