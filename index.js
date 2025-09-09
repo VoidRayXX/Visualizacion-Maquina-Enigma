@@ -31,7 +31,6 @@ const configuraciones = new Map([
     ["III", ["BDFHJLCPRTXVZNYEIWGAKMUSQO", "V"]],
     ["IV", ["ESOVPZJAYQUIRHXLNFTGKDCMWB", "J"]],
     ["V", ["VZBRGITYUPSDNHLXAWMJQOFECK", "Z"]],
-    ["A", ["EJMZALYXVBWFCRQUONTSPIKHGD", null]],
     ["B", ["YRUHQSLDPXNGOKMIEBFZCWVJAT", null]],
     ["C", ["FVPJIAOYEDRZXWGCTKUQSBNMHL", null]],
     ["plugboard", [abecedario, null]]
@@ -43,39 +42,27 @@ function indicarPosRotor(id){
 }
 
 
-function dividirEnBloques(texto, tamaño = 5) {
-    const textoSinEspacios = texto.replace(/ /g, "");
-    const bloques = [];
-
-    for (let i = 0; i < textoSinEspacios.length; i += tamaño) {
-        bloques.push(textoSinEspacios.slice(i, i + tamaño));
-    }
-
-    return bloques.join(" ");
-}
-
-
 function dibujarFlecha(origenId, destinoId, svgID, sentido) {
     const svg = document.getElementById(svgID);
-    svg.innerHTML = ""; // limpiar antes de dibujar otra
+    svg.innerHTML = ""; //limpiar antes de dibujar otra
 
     const origen = document.getElementById(origenId).getBoundingClientRect();
     const destino = document.getElementById(destinoId).getBoundingClientRect();
 
-    // Coordenadas relativas al viewport (sin scroll)
+    //Coordenadas relativas al viewport
     const startY = origen.top + origen.height / 2;
     const endY = destino.top + destino.height / 2;
 
     let startX, endX;
     if(sentido === "ida"){
-        startX = origen.left;
-        endX = destino.right;
+        startX = origen.left; 
+        endX = destino.right; 
     } else {
         startX = origen.right;
-        endX = destino.left;
+        endX = destino.left;  
     }
 
-    // Tamaño del viewport
+    //Tamaño del viewport
     svg.setAttribute("width", window.innerWidth);
     svg.setAttribute("height", window.innerHeight);
 
@@ -83,11 +70,11 @@ function dibujarFlecha(origenId, destinoId, svgID, sentido) {
 
     let color; 
     if(id < 9){
-        color = "red";
+        color = "#FF4444";        
     } else if(id < 11){
-        color = "green";
+        color = "#44FF88";        
     } else {
-        color = "blue";
+        color = "#4488FF";        
     }
 
     const defs = `
@@ -167,19 +154,31 @@ function actualizarRotorVisual(rotorID, rotorObj) {
     }
 }
 
+function dividirEnBloques(texto, tamaño = 5) {
+    const textoSinEspacios = texto.replace(/ /g, "");
+    const bloques = [];
+
+    for (let i = 0; i < textoSinEspacios.length; i += tamaño) {
+        bloques.push(textoSinEspacios.slice(i, i + tamaño));
+    }
+
+    return bloques.join(" ");
+}
+
 function agregarLetraASentencia(letra, divID, original) {
     const textoSentencia = document.getElementById(divID);
     let texto;
-    if(original){
+
+    if (original) {
         letrasOriginales.push(letra);
-        texto = letrasOriginales.join(" ");
-    }
-    else {
+        texto = letrasOriginales.join("");
+    } else {
         letrasEncriptadas.push(letra);
-        texto = letrasEncriptadas.join(" ");
+        texto = letrasEncriptadas.join("");
     }
 
-    textoSentencia.innerHTML = texto + ' <span class="cursor-parpadeante">&nbsp;_</span>';
+    const textoEnBloques = dividirEnBloques(texto);
+    textoSentencia.innerHTML = textoEnBloques + ' <span class="cursor-parpadeante">&nbsp;_</span>';
 }
 
 function obtenerIndiceLetraRotor(letra, nombreRotor = "" , columna = null){
@@ -234,15 +233,15 @@ function trazarCamino(caminoEncriptacion) {
             columnaDestino = 1;
         }
 
-        // Obtener letras del camino
+        //obtener letras del camino
         const letraOrigen = caminoEncriptacion[i][columnaOrigen];
         const letraDestino = caminoEncriptacion[i + 1][columnaDestino];
 
-        // Convertir letras a índices basados en la posición fija del elemento
+        //convertir letras a índices basados en la posición fija del elemento
         const indiceOrigen = obtenerIndiceLetraRotor(letraOrigen, camino[i], columnaOrigen);
         const indiceDestino = obtenerIndiceLetraRotor(letraDestino, camino[i+1], columnaDestino);
 
-        // Usar índices para construir los IDs
+        //usar índices para construir los IDs
         const origen = camino[i] + "-" + indiceOrigen;
         const destino = camino[i + 1] + "-" + indiceDestino;
         const idFlecha = "flecha" + (i + 1).toString();
@@ -262,7 +261,7 @@ function trazarCamino(caminoEncriptacion) {
 }
 
 function borrarSVGs(){
-    //Limpia todos los SVGs
+    //limpia todos los SVGs
     for (let i = 0; i < 20; i++) {
         const svg = document.getElementById("flecha" + i);
         if (svg) svg.innerHTML = "";
@@ -294,7 +293,7 @@ function cambiarConfigEnigma(){
     const selects = document.querySelectorAll(".rotor-group select");
     let [reflector, rotorIzq, rotorCentral, rotorDer] = Array.from(selects).map(sel => sel.value);
     
-    //variables globales
+    //llamar a variables globales
     rotorIzq = new Rotor(rotorIzq, letraIzq, ringSettings[0]);
     rotorCentral = new Rotor(rotorCentral, letraCen, ringSettings[1]);
     rotorDer = new Rotor(rotorDer, letraDer, ringSettings[2]);
@@ -321,7 +320,7 @@ function actualizarConfig(event){
 
     const posRotor = indicarPosRotor(idVentana);
 
-    // Aquí cambia según el modo
+    //aquí cambia según el modo, ring settings o rotor settigs
     if (modoRings) ringSettings[posRotor] = nuevaLetra;
     else rotorSettings[posRotor] = nuevaLetra;
     
@@ -368,13 +367,8 @@ function crearRotor(posRotor, nombreRotor){
 
     const [secuencia, notch] = configuraciones.get(nombreRotor);
 
-    // Crea nuevo contenido
     crearColumna(columnaIzq, abecedario, posRotor+"-izq-");
     crearColumna(columnaDer, secuencia, posRotor+"-der-");
-
-    // Quita animación para mostrar nuevo contenido
-    columnaIzq.classList.remove("girar");
-    columnaDer.classList.remove("girar");
 }
 
 
@@ -403,7 +397,7 @@ document.querySelectorAll('.rotor-enigma button').forEach(boton => {
 
 const selects = document.querySelectorAll(".rotor-group select");
 
-// Recorre cada uno y le agrega un listener
+//Le agrega un listener a cada selector de rotor settings
 selects.forEach(sel => {
     sel.addEventListener("change", (e) => {
         const grupo = e.target.closest(".rotor-group");
@@ -436,20 +430,19 @@ function mostrarRingSettings() {
 const botonRingSettings = document.querySelector('.ring-settings');
 botonRingSettings.addEventListener('click', () => {
     modoRings = !modoRings;
-    enigma.printConfig();
     if (modoRings) {
         botonRingSettings.textContent = "< Rotor Settings";
         const titulo = document.querySelector(".rotors-title");
-        titulo.textContent = "Ring Settings";
+        titulo.textContent = "Ring Settings (Ringstellung)";
         selects.forEach(sel => sel.classList.add("desactivado"));
         mostrarRingSettings();
 
     } else {
         botonRingSettings.textContent = "Ring Settings >";
         const titulo = document.querySelector(".rotors-title");
-        titulo.textContent = "Rotor Settings";
+        titulo.textContent = "Rotor Settings (Walzenlage)";
         selects.forEach(sel => sel.classList.remove("desactivado"));
-        mostrarConfigActual(); // vuelve a mostrar las posiciones normales
+        mostrarConfigActual(); //vuelve a mostrar las posiciones normales
     }
 });
 
@@ -459,7 +452,7 @@ botonRingSettings.addEventListener('click', () => {
 document.querySelectorAll(".rotor-enigma .window").forEach(win => {
   win.addEventListener("input", () => {
     let val = win.textContent.toUpperCase().replace(/[^A-Z]/g, "");
-    const contenido = val.slice(-1) || "A"; // siempre 1 letra
+    const contenido = val.slice(-1) || "A"; //muestre el valor válido (sólo 1 letra), y si no hay, "A"
     win.textContent = contenido;
     const idVentana = win.id;
     const posRotor = indicarPosRotor(idVentana);
@@ -476,8 +469,16 @@ document.querySelectorAll(".rotor-enigma .window").forEach(win => {
 
 
 const coloresPlugboard = [
-  "#2196F3", "#CDDC39", "#FF5252", "#FF9800", "#9C27B0",
-  "#607D8B", "#FFEB3B", "#388E3C", "#00BCD4", "#212121"
+  "#FF1744",  // Rojo vibrante
+  "#00E676",  // Verde lima
+  "#2196F3",  // Azul brillante  
+  "#FF9100",  // Naranja intenso
+  "#E91E63",  // Rosa fucsia
+  "#00BCD4",  // Cian
+  "#FFEB3B",  // Amarillo brillante
+  "#9C27B0",  // Púrpura
+  "#FF5722",  // Naranja rojizo
+  "#4CAF50"   // Verde intenso
 ];
 
 
@@ -487,7 +488,7 @@ function cambiarColorBotones(letra1, letra2){
     const boton2 = [...document.querySelectorAll(".plugboard-button")]
     .find(btn => btn.textContent.trim() === letra2);
 
-    // Asignar color desde la lista
+    //Asignar color desde la lista
     const color = coloresPlugboard[colorIndex % coloresPlugboard.length];
     boton1.style.backgroundColor = color;
     boton2.style.backgroundColor = color;
@@ -507,7 +508,6 @@ function eliminarConex(letra1){
     boton2.style.backgroundColor = "";
 
     enigma.plugboard.eliminarConex(letra1);
-    enigma.plugboard.mostrarPlugboard();
 }
 
 let seleccionados = [];
@@ -517,7 +517,7 @@ let numConexiones = 0;
 document.querySelectorAll(".plugboard-button").forEach((boton) => {
   boton.addEventListener("click", () => {
     let letra;
-    if(numConexiones < 11) letra = boton.textContent.trim();
+    if(numConexiones < 10) letra = boton.textContent.trim();
     else return;
 
     if(boton.classList.contains("seleccionado")){
@@ -540,7 +540,6 @@ document.querySelectorAll(".plugboard-button").forEach((boton) => {
     if(seleccionados.length === 2 && numConexiones < 11) {
         const [letra1, letra2] = seleccionados;
         enigma.conectarLetras(letra1, letra2);
-        enigma.plugboard.mostrarPlugboard();
 
         cambiarColorBotones(letra1, letra2);
         colorIndex++;
@@ -555,7 +554,7 @@ document.querySelectorAll(".plugboard-button").forEach((boton) => {
 let selectedFile = null;
 let encryptedContent = null;
 
-// Referencias DOM
+//Referencias DOM sección Upload File
 const uploadAreaCompact = document.getElementById('uploadAreaCompact');
 const fileInputCompact = document.getElementById('fileInputCompact');
 const uploadPlaceholder = document.getElementById('uploadPlaceholder');
@@ -563,7 +562,7 @@ const encryptBtnCompact = document.getElementById('encryptBtnCompact');
 const downloadBtnCompact = document.getElementById('downloadBtnCompact');
 const clearBtnCompact = document.getElementById('clearBtnCompact');
 
-// Event listeners para drag & drop
+//Event listeners para drag & drop
 uploadAreaCompact.addEventListener('dragover', (e) => {
     e.preventDefault();
     uploadAreaCompact.classList.add('dragover');
@@ -584,22 +583,22 @@ uploadAreaCompact.addEventListener('drop', (e) => {
     }
 });
 
-// Event listener para click en área de carga
+//Event listener para click en área de carga
 uploadAreaCompact.addEventListener('click', () => {
     fileInputCompact.click();
 });
 
-// Event listener para selección de archivo
+//Event listener para selección de archivo
 fileInputCompact.addEventListener('change', (e) => {
     if (e.target.files.length > 0) {
         handleFileSelect(e.target.files[0]);
     }
 });
 
-// Función para manejar selección de archivo
+//Función para manejar selección de archivo
 function handleFileSelect(file) {
     if (!file.name.toLowerCase().endsWith('.txt')) {
-        alert('Por favor, selecciona solo archivos .txt');
+        alert('Please select only .txt files');
         return;
     }
     
@@ -607,15 +606,15 @@ function handleFileSelect(file) {
     uploadPlaceholder.innerHTML = `<div class="file-selected">${file.name}</div>`;
     uploadPlaceholder.classList.add('fade-in');
     
-    // Habilitar botón de encriptar
+    //Habilitar botón de encriptar
     encryptBtnCompact.style.opacity = '1';
     encryptBtnCompact.style.cursor = 'pointer';
 }
 
-// Event listener para botón encriptar
+//Event listener para botón encriptar
 encryptBtnCompact.addEventListener('click', () => {
     if (!selectedFile) {
-        alert('Por favor, selecciona un archivo primero');
+        alert('Please select a file first');
         return;
     }
     
@@ -624,14 +623,14 @@ encryptBtnCompact.addEventListener('click', () => {
         const content = e.target.result;
         encryptedContent = encriptarMensaje(content);
         
-        // Mostrar botón de descarga
+        //Mostrar botón de descarga
         downloadBtnCompact.classList.add('active');
         uploadPlaceholder.innerHTML = `<div class="file-selected">✅ ${selectedFile.name} encriptado</div>`;
     };
     reader.readAsText(selectedFile);
 });
 
-// Event listener para botón descargar
+//Event listener para botón descargar
 downloadBtnCompact.addEventListener('click', () => {
     if (!encryptedContent) return;
     
@@ -646,12 +645,12 @@ downloadBtnCompact.addEventListener('click', () => {
     URL.revokeObjectURL(url);
 });
 
-// Event listener para botón limpiar
+//Event listener para botón limpiar
 clearBtnCompact.addEventListener('click', () => {
     selectedFile = null;
     encryptedContent = null;
     fileInputCompact.value = '';
-    uploadPlaceholder.innerHTML = 'Arrastra o haz clic aquí';
+    uploadPlaceholder.innerHTML = 'Drag or click here';
     uploadPlaceholder.classList.remove('fade-in');
     downloadBtnCompact.classList.remove('active');
     encryptBtnCompact.style.opacity = '0.7';
@@ -668,15 +667,15 @@ function encriptarMensaje(texto) {
     return textoEncriptado;
 }
 
-// Inicialización
+//Inicialización
 encryptBtnCompact.style.opacity = '0.7';
 encryptBtnCompact.style.cursor = 'default';
 
-// Redibujar al redimensionar la ventana
+//Redibujar al redimensionar la ventana
 window.addEventListener("resize", () => {
     borrarSVGs();
 
-    // vuelve a trazar el camino de la última letra presionada
+    //vuelve a trazar el camino de la última letra presionada
     if (ultimoCamino) {
         trazarCamino(ultimoCamino);
     }
@@ -685,7 +684,7 @@ window.addEventListener("resize", () => {
 window.addEventListener("scroll", () => {
     borrarSVGs();
     
-    // Redibujar el camino si existe
+    //Redibujar el camino si existe
     if (ultimoCamino) {
         trazarCamino(ultimoCamino);
     }
